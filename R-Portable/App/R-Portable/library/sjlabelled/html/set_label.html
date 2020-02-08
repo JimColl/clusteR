@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Add variable label(s) to variables</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for set_label {sjlabelled}"><tr><td>set_label {sjlabelled}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Add variable label(s) to variables</h2>
+
+<h3>Description</h3>
+
+<p>This function adds variable labels as attribute
+(named <code>"label"</code>) to the variable <code>x</code>, resp. to a
+set of variables in a data frame or a list-object. <code>var_labels()</code>
+is intended for use within pipe-workflows and has a tidyverse-consistent
+syntax, including support for quasi-quotation (see 'Examples').
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+set_label(x, label)
+
+set_label(x) &lt;- value
+
+var_labels(x, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>Variable (vector), list of variables or a data frame where variables
+labels should be added as attribute. For <code>var_labels()</code>, <code>x</code>
+must be a data frame only.</p>
+</td></tr>
+<tr valign="top"><td><code>label</code></td>
+<td>
+<p>If <code>x</code> is a vector (single variable), use a single character string with
+the variable label for <code>x</code>. If <code>x</code> is a data frame, use a
+vector with character labels of same length as <code>ncol(x)</code>.
+Use <code>label = ""</code> to remove labels-attribute from <code>x</code>, resp.
+set any value of vector <code>label</code> to <code>""</code> to remove specific variable
+label attributes from a data frame's variable.</p>
+</td></tr>
+<tr valign="top"><td><code>value</code></td>
+<td>
+<p>See <code>label</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>Pairs of named vectors, where the name equals the variable name,
+which should be labelled, and the value is the new variable label.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p><code>x</code>, with variable label attribute(s), which contains the
+variable name(s); or with removed label-attribute if
+<code>label = ""</code>.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>See vignette <a href="../doc/intro_sjlabelled.html">Labelled Data and the sjlabelled-Package</a>
+for more details; <code><a href="set_labels.html">set_labels</a></code> to manually set value labels or <code><a href="get_label.html">get_label</a></code>
+to get variable labels.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# manually set value and variable labels
+dummy &lt;- sample(1:4, 40, replace = TRUE)
+dummy &lt;- set_labels(dummy, labels = c("very low", "low", "mid", "hi"))
+dummy &lt;- set_label(dummy, label = "Dummy-variable")
+
+# or use:
+# set_label(dummy) &lt;- "Dummy-variable"
+
+# auto-detection of value labels by default, auto-detection of
+# variable labels if argument "title" set to NULL.
+## Not run: 
+library(sjPlot)
+sjp.frq(dummy, title = NULL)
+## End(Not run)
+
+# Set variable labels for data frame
+dummy &lt;- data.frame(
+  a = sample(1:4, 10, replace = TRUE),
+  b = sample(1:4, 10, replace = TRUE),
+  c = sample(1:4, 10, replace = TRUE)
+)
+dummy &lt;- set_label(dummy, c("Variable A", "Variable B", "Variable C"))
+str(dummy)
+
+# remove one variable label
+dummy &lt;- set_label(dummy, c("Variable A", "", "Variable C"))
+str(dummy)
+
+# setting same variable labels to multiple vectors
+
+# create a set of dummy variables
+dummy1 &lt;- sample(1:4, 40, replace = TRUE)
+dummy2 &lt;- sample(1:4, 40, replace = TRUE)
+dummy3 &lt;- sample(1:4, 40, replace = TRUE)
+# put them in list-object
+dummies &lt;- list(dummy1, dummy2, dummy3)
+# and set variable labels for all three dummies
+dummies &lt;- set_label(dummies, c("First Dummy", "2nd Dummy", "Third dummy"))
+# see result...
+get_label(dummies)
+
+
+# use 'var_labels()' to set labels within a pipe-workflow, and
+# when you need "tidyverse-consistent" api.
+# Set variable labels for data frame
+dummy &lt;- data.frame(
+  a = sample(1:4, 10, replace = TRUE),
+  b = sample(1:4, 10, replace = TRUE),
+  c = sample(1:4, 10, replace = TRUE)
+)
+
+library(magrittr)
+dummy %&gt;%
+  var_labels(a = "First variable", c = "third variable") %&gt;%
+  get_label()
+
+# with quasi-quotation
+library(rlang)
+v1 &lt;- "First variable"
+v2 &lt;- "Third variable"
+dummy %&gt;%
+  var_labels(a = !!v1, c = !!v2) %&gt;%
+  get_label()
+
+x1 &lt;- "a"
+x2 &lt;- "c"
+dummy %&gt;%
+  var_labels(!!x1 := !!v1, !!x2 := !!v2) %&gt;%
+  get_label()
+
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>sjlabelled</em> version 1.1.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

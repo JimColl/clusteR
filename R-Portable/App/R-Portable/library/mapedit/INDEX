@@ -1,0 +1,12 @@
+drawFeatures            Draw (simple) features on a map
+editFeatures            Interactively Edit Map Features
+editMap                 Interactively Edit a Map
+editMod                 Shiny Module Server for Geo Create, Edit,
+                        Delete
+editModUI               Shiny Module UI for Geo Create, Edit, Delete
+mapedit-package         mapedit: interactive editing and selection for
+                        geospatial data
+selectFeatures          Interactively Select Map Features
+selectMap               Interactively Select Map Features
+selectMod               Shiny Module Server for Geo Selection
+selectModUI             Shiny Module UI for Geo Selection

@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Retrieve variable label(s) of labelled data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for get_label {sjlabelled}"><tr><td>get_label {sjlabelled}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Retrieve variable label(s) of labelled data</h2>
+
+<h3>Description</h3>
+
+<p>This function returns the variable labels of labelled data.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+get_label(x, ..., def.value = NULL, case = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>A data frame with variables that have label attributes (e.g.
+from an imported SPSS, SAS or STATA data set, via <code><a href="read_spss.html">read_spss</a></code>,
+<code><a href="read_spss.html">read_sas</a></code> or <code><a href="read_spss.html">read_stata</a></code>); a variable
+(vector) with variable label attribute; or a <code>list</code> of variables
+with variable label attributes. See 'Examples'.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>Optional, names of variables, where labels should be retrieved.
+Required, if either data is a data frame and no vector, or if only
+selected variables from <code>x</code> should be used in the function.
+Convenient argument to work with pipe-chains (see 'Examples').</p>
+</td></tr>
+<tr valign="top"><td><code>def.value</code></td>
+<td>
+<p>Optional, a character string which will be returned as label
+if <code>x</code> has no label attribute. By default, <code>NULL</code> is returned.</p>
+</td></tr>
+<tr valign="top"><td><code>case</code></td>
+<td>
+<p>Desired target case. Labels will automatically converted into the
+specified character case. See <code><a href="../../snakecase/html/to_any_case.html">to_any_case</a></code> for
+more details on this argument.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>A named character vector with all variable labels from the data frame or list;
+or a simple character vector (of length 1) with the variable label, if <code>x</code> is a variable.
+If <code>x</code> is a single vector and has no label attribute, the value
+of <code>def.value</code> will be returned (which is by default <code>NULL</code>).
+</p>
+
+
+<h3>Note</h3>
+
+<p><code><a href="set_label.html">var_labels</a></code> is an alternative way to set variable labels,
+which follows the philosophy of tidyvers API design (data as first argument,
+dots as value pairs indicating variables)
+</p>
+
+
+<h3>See Also</h3>
+
+<p>See vignette <a href="../doc/intro_sjlabelled.html">Labelled Data and the sjlabelled-Package</a>
+for more details; <code><a href="set_label.html">set_label</a></code> to manually set variable labels or <code><a href="get_labels.html">get_labels</a></code>
+to get value labels; <code><a href="set_label.html">var_labels</a></code> to set multiple variable
+labels at once.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# import SPSS data set
+# mydat &lt;- read_spss("my_spss_data.sav", enc="UTF-8")
+
+# retrieve variable labels
+# mydat.var &lt;- get_label(mydat)
+
+# retrieve value labels
+# mydat.val &lt;- get_labels(mydat)
+
+data(efc)
+
+# get variable lable
+get_label(efc$e42dep)
+
+# alternative way
+get_label(efc)["e42dep"]
+
+# 'get_label()' also works within pipe-chains
+library(magrittr)
+efc %&gt;% get_label(e42dep, e16sex)
+
+# set default values
+get_label(mtcars, mpg, cyl, def.value = "no var labels")
+
+# simple barplot
+barplot(table(efc$e42dep))
+# get value labels to annotate barplot
+barplot(table(efc$e42dep),
+        names.arg = get_labels(efc$e42dep),
+        main = get_label(efc$e42dep))
+
+# get labels from multiple variables
+get_label(list(efc$e42dep, efc$e16sex, efc$e15relat))
+
+# use case conversion for human-readable labels
+data(iris)
+get_label(iris, def.value = colnames(iris))
+get_label(iris, def.value = colnames(iris), case = "parsed")
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>sjlabelled</em> version 1.1.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

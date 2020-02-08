@@ -1,0 +1,10 @@
+addFeatures             Type agnositc version of 'leaflet::add*'
+                        functions.
+addHomeButton           Add a home button / zoom-to-layer button to a
+                        map.
+addImageQuery           Add image query functionality to
+                        leaflet/mapview map.
+addLogo                 add a local or remote image (png, jpg, gif,
+                        bmp, ...) to a leaflet map
+addMouseCoordinates     Add mouse coordinate information at top of map.
+garnishMap              Garnish/decorate leaflet or mapview maps.

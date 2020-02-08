@@ -1,0 +1,88 @@
+DRR                     Dimensionality Reduction via Regression (DRR)
+ICA                     Independent Component Analysis (ICA)
+bootstrap_model         Model bootstrapping
+bootstrap_parameters    Parameters bootstrapping
+check_clusterstructure
+                        Check suitability of data for clustering
+check_factorstructure   Check suitability of data for Factor Analysis
+                        (FA)
+check_kmo               Kaiser, Meyer, Olkin (KMO) Measure of Sampling
+                        Adequacy (MSA) for Factor Analysis
+check_multimodal        Check if a distribution is unimodal or
+                        multimodal
+check_sphericity        Bartlett's Test of Sphericity
+ci.merMod               Confidence Interval (CI)
+ci_wald                 Wald-test approximation for CIs and p-values
+cluster_analysis        Compute cluster analysis and return group
+                        indices
+cluster_discrimination
+                        Compute a linear discriminant analysis on
+                        classified cluster groups
+cmds                    Classical Multidimensional Scaling (cMDS)
+convert_data_to_numeric
+                        Convert data to numeric
+convert_efa_to_cfa      Conversion between EFA results and CFA
+                        structure
+data_partition          Partition data into a test and a training set
+degrees_of_freedom      Degrees of Freedom (DoF)
+demean                  Compute group-meaned and de-meaned variables
+describe_distribution   Describe a distribution
+dof_kenward             p-values using Kenward-Roger approximation
+dof_ml1                 p-values using the "m-l-1" heuristic
+dof_satterthwaite       p-values using Satterthwaite approximation
+equivalence_test.lm     Equivalence test
+factor_analysis         Factor Analysis (FA)
+format_algorithm        Model Algorithm formatting
+format_bf               Bayes Factor formatting
+format_model            Model Name formatting
+format_number           Convert number to words
+format_order            Order (first, second, ...) formatting
+format_p                p-values formatting
+format_parameters       Parameter names formatting
+format_pd               Probability of direction (pd) formatting
+format_rope             Percentage in ROPE formatting
+model_parameters        Model Parameters
+model_parameters.BFBayesFactor
+                        Parameters from BayesFactor objects
+model_parameters.Mclust
+                        Mixture Models Parameters
+model_parameters.PCA    Parameters from Structural Models (PCA, EFA,
+                        ...)
+model_parameters.aov    Parameters from ANOVAs
+model_parameters.befa   Parameters from PCA/FA
+model_parameters.default
+                        Parameters from (General) Linear Models
+model_parameters.gam    Parameters of Generalized Additive (Mixed)
+                        Models
+model_parameters.htest
+                        Parameters from Correlations and t-tests
+model_parameters.kmeans
+                        Parameters from Cluster Models (k-means, ...)
+model_parameters.lavaan
+                        Parameters from CFA/SEM models
+model_parameters.mixor
+                        Parameters from Mixed Models
+model_parameters.stanreg
+                        Parameters from Bayesian Models
+model_parameters.zeroinfl
+                        Model Parameters from Zero-Inflated Models
+n_clusters              Number of clusters to extract
+n_factors               Number of components/factors to retain in
+                        PCA/FA
+n_parameters            Count number of parameters in a model
+p_value                 p-values
+parameters_table        Parameter table formatting
+parameters_type         Type of model parameters
+principal_components    Principal Component Analysis (PCA)
+print                   Print model parameters
+reduce_parameters       Dimensionality reduction (DR) / Features
+                        Reduction
+rescale_weights         Rescale design weights for multilevel analysis
+reshape_loadings        Reshape loadings between wide/long formats
+select_parameters       Automated selection of model parameters
+simulate_model          Simulated draws from model coefficients
+simulate_parameters     Simulate Model Parameters
+skewness                Compute Skewness and Kurtosis
+smoothness              Quantify the smoothness of a vector
+standard_error_robust   Standard Errors
+standardize_names       Standardize column names

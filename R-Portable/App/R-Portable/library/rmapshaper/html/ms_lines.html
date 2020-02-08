@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Convert polygons to topological boundaries (lines)</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for ms_lines {rmapshaper}"><tr><td>ms_lines {rmapshaper}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Convert polygons to topological boundaries (lines)</h2>
+
+<h3>Description</h3>
+
+<p>Convert polygons to topological boundaries (lines)
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ms_lines(input, fields = NULL, force_FC = TRUE, sys = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>input</code></td>
+<td>
+<p>input polygons object to convert to inner lines. One of:
+</p>
+
+<ul>
+<li> <p><code>geo_json</code> or <code>character</code> polygons;
+</p>
+</li>
+<li> <p><code>geo_list</code> polygons;
+</p>
+</li>
+<li> <p><code>SpatialPolygons*</code>;
+</p>
+</li>
+<li> <p><code>sf</code> or <code>sfc</code> polygons object
+</p>
+</li></ul>
+</td></tr>
+<tr valign="top"><td><code>fields</code></td>
+<td>
+<p>character vector of field names. If left as <code>NULL</code>
+(default), external (unshared) boundaries are attributed as TYPE 0 and
+internal (shared) boundaries are TYPE 1. Giving a field name adds an
+intermediate level of hierarchy at TYPE 1, with the lowest-level internal
+boundaries set to TYPE 2. Supplying a character vector of field names adds
+additional levels of hierarchy.</p>
+</td></tr>
+<tr valign="top"><td><code>force_FC</code></td>
+<td>
+<p>should the output be forced to be a <code>FeatureCollection</code>
+even if there are no attributes? Default <code>TRUE</code>.
+<code>FeatureCollections</code> are more compatible with <code>rgdal::readOGR</code>
+and <code>geojsonio::geojson_sp</code>. If <code>FALSE</code> and there are no
+attributes associated with the geometries, a <code>GeometryCollection</code> will
+be output. Ignored for <code>Spatial</code> objects.</p>
+</td></tr>
+<tr valign="top"><td><code>sys</code></td>
+<td>
+<p>Should the system mapshaper be used instead of the bundled mapshaper? Gives
+better performance on large files. Requires the mapshaper node package to be installed
+and on the PATH.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>topological boundaries as lines, in the same class as the input
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+library(geojsonio)
+library(sp)
+
+poly &lt;- structure('{"type":"FeatureCollection",
+             "features":[
+             {"type":"Feature",
+             "properties":{"foo": "a"},
+             "geometry":{"type":"Polygon","coordinates":[[
+             [102,2],[102,3],[103,3],[103,2],[102,2]
+             ]]}}
+             ,{"type":"Feature",
+             "properties":{"foo": "a"},
+             "geometry":{"type":"Polygon","coordinates":[[
+             [103,3],[104,3],[104,2],[103,2],[103,3]
+             ]]}},
+             {"type":"Feature",
+             "properties":{"foo": "b"},
+             "geometry":{"type":"Polygon","coordinates":[[
+             [102.5,1],[102.5,2],[103.5,2],[103.5,1],[102.5,1]
+             ]]}}]}', class = c("json", "geo_json"))
+
+poly &lt;- geojson_sp(poly)
+summary(poly)
+plot(poly)
+
+out &lt;- ms_lines(poly)
+summary(out)
+plot(out)
+
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>rmapshaper</em> version 0.4.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

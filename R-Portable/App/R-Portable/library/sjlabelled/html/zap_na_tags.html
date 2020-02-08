@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Convert tagged NA values into regular NA</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for zap_na_tags {sjlabelled}"><tr><td>zap_na_tags {sjlabelled}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Convert tagged NA values into regular NA</h2>
+
+<h3>Description</h3>
+
+<p>Replaces all <code><a href="../../haven/html/tagged_na.html">tagged_na</a></code> values with
+regular <code>NA</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+zap_na_tags(x, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>A <code><a href="../../haven/html/labelled.html">labelled</a></code> vector with <code>tagged_na</code>
+values, or a data frame with such vectors.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>Optional, unquoted names of variables that should be selected for
+further processing. Required, if <code>x</code> is a data frame (and no
+vector) and only selected variables from <code>x</code> should be processed.
+You may also use functions like <code>:</code> or tidyselect's
+<code><a href="../../tidyselect/html/select_helpers.html">select_helpers</a></code>.
+See 'Examples'.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p><code>x</code>, where all <code>tagged_na</code> values are converted to <code>NA</code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+library(haven)
+x &lt;- labelled(
+  c(1:3, tagged_na("a", "c", "z"), 4:1),
+  c("Agreement" = 1, "Disagreement" = 4, "First" = tagged_na("c"),
+    "Refused" = tagged_na("a"), "Not home" = tagged_na("z"))
+)
+# get current NA values
+x
+get_na(x)
+zap_na_tags(x)
+get_na(zap_na_tags(x))
+
+# also works with non-labelled vector that have tagged NA values
+x &lt;- c(1:5, tagged_na("a"), tagged_na("z"), NA)
+haven::print_tagged_na(x)
+haven::print_tagged_na(zap_na_tags(x))
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>sjlabelled</em> version 1.1.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

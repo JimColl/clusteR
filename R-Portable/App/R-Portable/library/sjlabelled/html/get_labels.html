@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Retrieve value labels of labelled data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for get_labels {sjlabelled}"><tr><td>get_labels {sjlabelled}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Retrieve value labels of labelled data</h2>
+
+<h3>Description</h3>
+
+<p>This function returns the value labels of labelled data.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+get_labels(
+  x,
+  attr.only = FALSE,
+  values = NULL,
+  non.labelled = FALSE,
+  drop.na = TRUE,
+  drop.unused = FALSE
+)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>A data frame with variables that have value label attributes (e.g.
+from an imported SPSS, SAS or STATA data set, via <code><a href="read_spss.html">read_spss</a></code>,
+<code><a href="read_spss.html">read_sas</a></code> or <code><a href="read_spss.html">read_stata</a></code>); a variable
+(vector) with value label attributes; or a <code>list</code> of variables
+with values label attributes. If <code>x</code> has no label attributes,
+factor levels are returned. See 'Examples'.</p>
+</td></tr>
+<tr valign="top"><td><code>attr.only</code></td>
+<td>
+<p>Logical, if <code>TRUE</code>, labels are only searched for
+in the the vector's <code>attributes</code>; else, if <code>attr.only = FALSE</code>
+and <code>x</code> has no label attributes, factor levels or string values
+are returned. See 'Examples'.</p>
+</td></tr>
+<tr valign="top"><td><code>values</code></td>
+<td>
+<p>String, indicating whether the values associated with the
+value labels are returned as well. If <code>values = "as.name"</code>
+(or <code>values = "n"</code>), values are set as <code>names</code>
+attribute of the returned object. If <code>values = "as.prefix"</code>
+(or <code>values = "p"</code>), values are included as prefix
+to each label. See 'Examples'.</p>
+</td></tr>
+<tr valign="top"><td><code>non.labelled</code></td>
+<td>
+<p>Logical, if <code>TRUE</code>, values without labels will
+also be included in the returned labels (see <code><a href="zap_labels.html">fill_labels</a></code>).</p>
+</td></tr>
+<tr valign="top"><td><code>drop.na</code></td>
+<td>
+<p>Logical, whether labels of tagged NA values (see <code><a href="../../haven/html/tagged_na.html">tagged_na</a></code>)
+should be included in the return value or not. By default, labelled
+(tagged) missing values are not returned. See <code><a href="get_na.html">get_na</a></code>
+for more details on tagged NA values.</p>
+</td></tr>
+<tr valign="top"><td><code>drop.unused</code></td>
+<td>
+<p>Logical, if <code>TRUE</code>, unused labels will be removed from
+the return value.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>Either a list with all value labels from all variables if <code>x</code>
+is a <code>data.frame</code> or <code>list</code>; a string with the value
+labels, if <code>x</code> is a variable;
+or <code>NULL</code> if no value label attribute was found.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>See vignette <a href="../doc/intro_sjlabelled.html">Labelled Data and the sjlabelled-Package</a>
+for more details; <code><a href="set_labels.html">set_labels</a></code> to manually set value
+labels, <code><a href="get_label.html">get_label</a></code> to get variable labels and
+<code><a href="get_values.html">get_values</a></code> to retrieve the values associated
+with value labels.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# import SPSS data set
+# mydat &lt;- read_spss("my_spss_data.sav")
+
+# retrieve variable labels
+# mydat.var &lt;- get_label(mydat)
+
+# retrieve value labels
+# mydat.val &lt;- get_labels(mydat)
+
+data(efc)
+get_labels(efc$e42dep)
+
+# simple barplot
+barplot(table(efc$e42dep))
+# get value labels to annotate barplot
+barplot(table(efc$e42dep),
+        names.arg = get_labels(efc$e42dep),
+        main = get_label(efc$e42dep))
+
+# include associated values
+get_labels(efc$e42dep, values = "as.name")
+
+# include associated values
+get_labels(efc$e42dep, values = "as.prefix")
+
+# get labels from multiple variables
+get_labels(list(efc$e42dep, efc$e16sex, efc$e15relat))
+
+
+# create a dummy factor
+f1 &lt;- factor(c("hi", "low", "mid"))
+# search for label attributes only
+get_labels(f1, attr.only = TRUE)
+# search for factor levels as well
+get_labels(f1)
+
+# same for character vectors
+c1 &lt;- c("higher", "lower", "mid")
+# search for label attributes only
+get_labels(c1, attr.only = TRUE)
+# search for string values as well
+get_labels(c1)
+
+
+# create vector
+x &lt;- c(1, 2, 3, 2, 4, NA)
+# add less labels than values
+x &lt;- set_labels(x, labels = c("yes", "maybe", "no"), force.values = FALSE)
+# get labels for labelled values only
+get_labels(x)
+# get labels for all values
+get_labels(x, non.labelled = TRUE)
+
+
+# get labels, including tagged NA values
+library(haven)
+x &lt;- labelled(c(1:3, tagged_na("a", "c", "z"), 4:1),
+              c("Agreement" = 1, "Disagreement" = 4, "First" = tagged_na("c"),
+                "Refused" = tagged_na("a"), "Not home" = tagged_na("z")))
+# get current NA values
+x
+get_labels(x, values = "n", drop.na = FALSE)
+
+
+# create vector with unused labels
+data(efc)
+efc$e42dep &lt;- set_labels(
+  efc$e42dep,
+  labels = c("independent" = 1, "dependent" = 4, "not used" = 5)
+)
+get_labels(efc$e42dep)
+get_labels(efc$e42dep, drop.unused = TRUE)
+get_labels(efc$e42dep, non.labelled = TRUE, drop.unused = TRUE)
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>sjlabelled</em> version 1.1.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

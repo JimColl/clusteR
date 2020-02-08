@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Retrieve labels of model terms from regression models</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for term_labels {sjlabelled}"><tr><td>term_labels {sjlabelled}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Retrieve labels of model terms from regression models</h2>
+
+<h3>Description</h3>
+
+<p>This function retrieves variable labels from model terms. In case
+of categorical variables, where one variable has multiple dummies,
+variable name and category value is returned.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+term_labels(
+  models,
+  mark.cat = FALSE,
+  case = NULL,
+  prefix = c("none", "varname", "label"),
+  ...
+)
+
+get_term_labels(
+  models,
+  mark.cat = FALSE,
+  case = NULL,
+  prefix = c("none", "varname", "label"),
+  ...
+)
+
+response_labels(models, case = NULL, multi.resp = FALSE, mv = FALSE, ...)
+
+get_dv_labels(models, case = NULL, multi.resp = FALSE, mv = FALSE, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>models</code></td>
+<td>
+<p>One or more fitted regression models. May also be glm's or
+mixed models.</p>
+</td></tr>
+<tr valign="top"><td><code>mark.cat</code></td>
+<td>
+<p>Logical, if <code>TRUE</code>, the returned vector has an
+attribute with logical values, which indicate whether a label indicates
+the value from a factor category (attribute value is <code>TRUE</code>) or
+a term's variable labels (attribute value is <code>FALSE</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>case</code></td>
+<td>
+<p>Desired target case. Labels will automatically converted into the
+specified character case. See <code><a href="../../snakecase/html/to_any_case.html">to_any_case</a></code> for
+more details on this argument.</p>
+</td></tr>
+<tr valign="top"><td><code>prefix</code></td>
+<td>
+<p>Indicates whether the value labels of categorical variables
+should be prefixed, e.g. with the variable name or variable label.
+May be abbreviated. See 'Examples',</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>Further arguments passed down to <code><a href="../../snakecase/html/to_any_case.html">to_any_case</a></code>,
+like <code>preprocess</code> or <code>postprocess</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>mv, multi.resp</code></td>
+<td>
+<p>Logical, if <code>TRUE</code> and <code>models</code> is a multivariate
+response model from a <code>brmsfit</code> object, then the labels for each
+dependent variable (multiple responses) are returned.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>Typically, the variable labels from model terms are returned. However,
+for categorical terms that have estimates for each category, the
+value labels are returned as well. As the return value is a named
+vector, you can easily use it with <span class="pkg">ggplot2</span>'s <code>scale_*()</code>
+functions to annotate plots.
+</p>
+
+
+<h3>Value</h3>
+
+<p>For <code>term_labels()</code>, a (named) character vector with
+variable labels of all model terms, which can be used, for instance,
+as axis labels to annotate plots. <br /> <br /> For <code>response_labels()</code>,
+a character vector with variable labels from all dependent variables
+of <code>models</code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# use data set with labelled data
+data(efc)
+
+fit &lt;- lm(barthtot ~ c160age + c12hour + c161sex + c172code, data = efc)
+term_labels(fit)
+
+# make "education" categorical
+library(sjmisc)
+efc$c172code &lt;- to_factor(efc$c172code)
+fit &lt;- lm(barthtot ~ c160age + c12hour + c161sex + c172code, data = efc)
+term_labels(fit)
+
+# prefix value of categorical variables with variable name
+term_labels(fit, prefix = "varname")
+
+# prefix value of categorical variables with value label
+term_labels(fit, prefix = "label")
+
+# get label of dv
+response_labels(fit)
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>sjlabelled</em> version 1.1.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

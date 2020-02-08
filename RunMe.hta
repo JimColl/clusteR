@@ -1,0 +1,187 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<meta charset="utf-8">
+<head>
+	<title>clusteR: Interactive point clustering built on R -- Version 0.8</title>
+	<HTA:APPLICATION
+		APPLICATIONNAME="clusteR: Interactive point clustering built on R -- Version 0.8"
+		id="clusteR"
+		version="0.8"
+		scroll="yes"
+		singleinstance="yes"
+	/>
+</head>
+<script type="text/vbscript" id="LOGRefresh">
+' <!--
+Sub LOGRefresh()
+	set oFSO=CreateObject("Scripting.FileSystemObject")
+	set oFile=oFSO.OpenTextFile("ShinyApp.log",1)
+	text = oFile.ReadAll
+	MyDataInfo.InnerText=text
+	oFile.Close
+End Sub
+' -->
+</script>
+<script type="text/vbscript" id="OOLOAD">
+' <!--
+sub OOLOAD()
+	window.resizeTo 835,800
+	Userlat.Value = "Latitude.Decimal"
+	Userlon.Value = "Longitude.Decimal"
+	Usercrs.Value = "4326"
+	Const ForReading = 1
+	Const ForWriting = 2
+	FullName = replace(clusteR.commandLine,chr(34),"")
+	arrFN=split(FullName,"\")
+	FileName = arrFN(ubound(arrFN))
+	SourceDir = replace(FullName,FileName,"")
+	x=Len(SourceDir)
+	SecondStringLen=x-2
+	SecondStringBase=Right(SourceDir,SecondStringLen)
+	SecondStringFull="LastDirectory=" & SecondStringBase & "R-Portable"
+	NewDrive=Left(SourceDir,2)
+	NewDriveString="LastDrive=" & NewDrive
+	AppDirLen=x-18
+	LPABD="PAL:LastPortableAppsBaseDir=" & Left(SourceDir,AppDirLen)
+	dim basePathFilename
+	basePathFilename = SourceDir & "R-Portable\Data\settings\R-PortableSettings.ini"
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	Set objFile = objFSO.OpenTextFile(basePathFilename, ForReading)
+	strText = objFile.ReadAll
+	objFile.Close
+	strText = Replace(strText, "PAL:LastPortableAppsBaseDir=C:\Users\Cornholio\Desktop", LPABD)
+	strText = Replace(strText, "LastDirectory=\Users\Cornholio\Desktop\clusteR-master\R-Portable", SecondStringFull)
+	strText = Replace(strText, "LastDrive=C:", NewDriveString)
+	Set objFile = objFSO.OpenTextFile(basePathFilename, ForWriting)
+	objFile.WriteLine strText
+	objFile.Close
+end sub
+' -->
+</script>
+<script type="text/vbscript" id="Shutdown">
+' <!--
+sub Shutdown()
+	iTimerID = window.setInterval("LOGRefresh()",1000)
+	dim sCurPathC
+	sCurPathC = CreateObject("Scripting.FileSystemObject").GetAbsolutePathName(".")
+	dim RKillPath
+	RKillPath = sCurPathC & "\shiny\killr.r"
+	Rexe           = "R-Portable\App\R-Portable\bin\Rscript.exe"
+	Ropts          = "--no-save --no-environ --no-init-file --no-restore --no-Rconsole"
+	RScriptFile    = RKillPath
+	Outfile        = "ShinyApp.log" 
+	strCommand     = Rexe & " " & Ropts & " " & RScriptFile & " 1> " & Outfile & " 2>&1"
+	intWindowStyle = 0
+	bWaitOnReturnT  = False
+	CreateObject("Wscript.Shell").Run strCommand, intWindowStyle, bWaitOnReturnT
+	Self.Close()
+end sub
+' -->
+</script>
+<script type="text/vbscript" id="ExecuteclusteR">
+' <!--
+Sub ExecuteclusteR()
+	iTimerID = window.setInterval("LOGRefresh()",5000)
+	Const ForReading = 1
+	Const ForWriting = 2
+	dim sCurPath
+	sCurPath = CreateObject("Scripting.FileSystemObject").GetAbsolutePathName(".")
+	dim basePathFilename
+	basePathFilename = sCurPath & "\global.txt"
+	dim shinyPath
+	shinyPath = sCurPath & "\shiny\"
+	dim shinyPathFilename
+	shinyPathFilename = sCurPath & "\shiny\global.txt"
+	dim shinyRPathFilename
+	shinyRPathFilename = sCurPath & "\shiny\global.r"
+	dim BGTXT
+	Set BGTXT = CreateObject("Scripting.FileSystemObject")
+	BGTXT.CopyFile basePathFilename, shinyPath, TRUE
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	Set objFile = objFSO.OpenTextFile(shinyPathFilename, ForReading)
+	strText = objFile.ReadAll
+	objFile.Close
+	strText = Replace(strText, "##USERFILE", Replace(userFile.Value, "\", "/"))
+	strText = Replace(strText, "##USERLAT", Userlat.Value)
+	strText = Replace(strText, "##USERLON", Userlon.Value)
+	strText = Replace(strText, "##USERcrs", Usercrs.Value)
+	strText = Replace(strText, "##USERNETD", PrintCheck.Value)
+	For i=0 to RadioButton2.length-1
+		If RadioButton2.Item(i).Checked Then
+			val = CStr(RadioButton2.Item(i).Value)
+			strText = Replace(strText, "##UserRoads", val)
+		End If
+	Next
+	strText = Replace(strText, "##RoadsFile", Replace(userROADFile.Value, "\", "/"))
+	Set objFile = objFSO.OpenTextFile(shinyPathFilename, ForWriting)
+	objFile.WriteLine strText
+	objFile.Close
+	dim RGTXT 
+	Set RGTXT = CreateObject("Scripting.FileSystemObject") 
+	RGTXT.DeleteFile(shinyRPathFilename) 
+	strComputer = "."
+	Set objWMIService = GetObject("winmgmts:\\" & strComputer & "\root\cimv2")
+	dim shinyPath2
+	shinyPath2 = sCurPath & "\shiny"
+	Set colFiles = objWMIService.ExecQuery _
+		("ASSOCIATORS OF {Win32_Directory.Name='"& shinyPath2 &"'} Where " _
+			& "ResultClass = CIM_DataFile")
+	For Each objFile In colFiles
+		strExtension = objFile.Extension
+		strExtension = Replace(strExtension, "txt", "r")
+		strNewName = objFile.Drive & objFile.Path & objFile.FileName & "." & strExtension
+		errResult = objFile.Rename(strNewName)
+	Next
+	dim shinyRAPPPath
+	shinyRAPPPath = sCurPath & "\shiny\global.r"
+	Rexe           = "R-Portable\App\R-Portable\bin\Rscript.exe"
+	Ropts          = "--no-save --no-environ --no-init-file --no-restore --no-Rconsole"
+	RScriptFile    = shinyRAPPPath
+	Outfile        = "ShinyApp.log" 
+	strCommand     = Rexe & " " & Ropts & " " & RScriptFile & " 1> " & Outfile & " 2>&1"
+	intWindowStyle = 0
+	bWaitOnReturnT  = True
+	CreateObject("Wscript.Shell").Run strCommand, intWindowStyle, bWaitOnReturnT
+End Sub
+' -->
+</script>
+<body onload="OOLOAD()" onbeforeunload="Shutdown()">
+<table>
+<tbody>
+<tr>
+	<td style="text-align: center;"> <img src="shiny/clusteR.png"> </td>
+</tr>
+<tr>
+	<td style="text-align: left;">
+	Welcome to clusteR -- V 0.8<br>
+	<br>
+	<fieldset>
+		<legend>User inputs</legend>
+		Your file (csv or shp):<input type="file" id="userFile" name="userFile"><br>
+		<br>
+		if csv:<br>
+		Latitude:<input type="text" name="Userlat" size="30"><br>
+		Longitude:<input type="text" name="Userlon" size="30"><br>
+		Projection epsg:<input type="text" name="Usercrs" size="30">
+	</fieldset>
+	<fieldset>
+		<legend><input type="checkbox"name="PrintCheck"value="0">Network distance:</legend>
+		 <input type="radio" name="RadioButton2" ID="RadioButton2" value="OSM">OSM<br>
+		 <input type="radio" name="RadioButton2" ID="RadioButton2" value="TIGER">TIGER<br>
+		 <input type="radio" name="RadioButton2" ID="RadioButton2" value="UPRoads">User Provided:<input type="file" id="userROADFile" name="userROADFile">
+	</fieldset>
+	<br>
+	<input type="button" value="Run clusteR" name="run_button"  onClick="ExecuteclusteR"><br>
+	<br>
+	Log:
+	</td>
+</tr>
+<tr>
+	<td>
+	<div id = "MyDataInfo" style="line-height:1em;overflow:scroll;padding:1px;"></div>
+	</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

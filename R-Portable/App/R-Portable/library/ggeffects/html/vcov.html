@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Calculate variance-covariance matrix for marginal effects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for vcov {ggeffects}"><tr><td>vcov {ggeffects}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Calculate variance-covariance matrix for marginal effects</h2>
+
+<h3>Description</h3>
+
+<p>Returns the variance-covariance matrix for the predicted values from <code>object</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'ggeffects'
+vcov(object, vcov.fun = NULL, vcov.type = NULL, vcov.args = NULL, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+<p>An object of class <code>"ggeffects"</code>, as returned by <code>ggpredict()</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>vcov.fun</code></td>
+<td>
+<p>String, indicating the name of the <code>vcov*()</code>-function
+from the <span class="pkg">sandwich</span> or <span class="pkg">clubSandwich</span>-package, e.g.
+<code>vcov.fun = "vcovCL"</code>, which is used to compute (cluster) robust
+standard errors for predictions. If <code>NULL</code>, standard errors (and
+confidence intervals) for predictions are based on the standard errors as
+returned by the <code>predict()</code>-function. <strong>Note</strong> that probably not
+all model objects that work with <code>ggpredict()</code> are also supported
+by the <span class="pkg">sandwich</span> or <span class="pkg">clubSandwich</span>-package.</p>
+</td></tr>
+<tr valign="top"><td><code>vcov.type</code></td>
+<td>
+<p>Character vector, specifying the estimation type for the
+robust covariance matrix estimation (see <code><a href="../../sandwich/html/vcovHC.html">vcovHC</a></code>
+or <code><a href="../../clubSandwich/html/vcovCR.html">vcovCR</a></code> for details).</p>
+</td></tr>
+<tr valign="top"><td><code>vcov.args</code></td>
+<td>
+<p>List of named vectors, used as additional arguments that
+are passed down to <code>vcov.fun</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>Currently not used.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>The returned matrix has as many rows (and columns) as possible combinations
+of predicted values from the <code>ggpredict()</code> call. For example, if there
+are two variables in the <code>terms</code>-argument of <code>ggpredict()</code> with 3 and 4
+levels each, there will be 3*4 combinations of predicted values, so the returned
+matrix has a 12x12 dimension. In short, <code>nrow(object)</code> is always equal to
+<code>nrow(vcov(object))</code>. See also 'Examples'.
+</p>
+
+
+<h3>Value</h3>
+
+<p>The variance-covariance matrix for the predicted values from <code>object</code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(efc)
+model &lt;- lm(barthtot ~ c12hour + neg_c_7 + c161sex + c172code, data = efc)
+result &lt;- ggpredict(model, c("c12hour [meansd]", "c161sex"))
+
+vcov(result)
+
+# compare standard errors
+sqrt(diag(vcov(result)))
+as.data.frame(result)
+
+# only two predicted values, no further terms
+# vcov() returns a 2x2 matrix
+result &lt;- ggpredict(model, "c161sex")
+vcov(result)
+
+# 2 levels for c161sex multiplied by 3 levels for c172code
+# result in 6 combinations of predicted values
+# thus vcov() returns a 6x6 matrix
+result &lt;- ggpredict(model, c("c161sex", "c172code"))
+vcov(result)
+
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>ggeffects</em> version 0.14.1 <a href="00Index.html">Index</a>]</div>
+</body></html>

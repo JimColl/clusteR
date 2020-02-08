@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Apply a mapshaper command string to a geojson object</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for apply_mapshaper_commands {rmapshaper}"><tr><td>apply_mapshaper_commands {rmapshaper}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Apply a mapshaper command string to a geojson object</h2>
+
+<h3>Description</h3>
+
+<p>Apply a mapshaper command string to a geojson object
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+apply_mapshaper_commands(data, command, force_FC, sys = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>data</code></td>
+<td>
+<p>geojson object or path to geojson file. If a file path, <code>sys</code>
+must be true</p>
+</td></tr>
+<tr valign="top"><td><code>command</code></td>
+<td>
+<p>valid mapshaper command string</p>
+</td></tr>
+<tr valign="top"><td><code>force_FC</code></td>
+<td>
+<p>should the output be forced to be a FeatureCollection (or
+Spatial*DataFrame) even if there are no attributes? Default <code>TRUE</code>.
+FeatureCollections are more compatible with rgdal::readOGR and
+geojsonio::geojson_sp. If FALSE and there are no attributes associated with
+the geometries, a GeometryCollection (or Spatial object with no dataframe)
+will be output.</p>
+</td></tr>
+<tr valign="top"><td><code>sys</code></td>
+<td>
+<p>Should the system mapshaper be used instead of the bundled mapshaper? Gives
+better performance on large files. Requires the mapshaper node package to be installed
+and on the PATH.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>geojson
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>rmapshaper</em> version 0.4.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

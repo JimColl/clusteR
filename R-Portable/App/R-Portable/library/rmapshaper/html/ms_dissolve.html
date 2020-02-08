@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Aggregate shapes in a polygon or point layer.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for ms_dissolve {rmapshaper}"><tr><td>ms_dissolve {rmapshaper}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Aggregate shapes in a polygon or point layer.</h2>
+
+<h3>Description</h3>
+
+<p>Aggregates using specified field, or all shapes if no field is given. For point layers,
+replaces a group of points with their centroid.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ms_dissolve(
+  input,
+  field = NULL,
+  sum_fields = NULL,
+  copy_fields = NULL,
+  weight = NULL,
+  snap = TRUE,
+  force_FC = TRUE,
+  sys = FALSE
+)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>input</code></td>
+<td>
+<p>spatial object to dissolve. One of:
+</p>
+
+<ul>
+<li> <p><code>geo_json</code> or <code>character</code> points or polygons;
+</p>
+</li>
+<li> <p><code>geo_list</code> points or polygons;
+</p>
+</li>
+<li> <p><code>SpatialPolygons</code>, or <code>SpatialPoints</code>
+</p>
+</li></ul>
+</td></tr>
+<tr valign="top"><td><code>field</code></td>
+<td>
+<p>the field to dissolve on</p>
+</td></tr>
+<tr valign="top"><td><code>sum_fields</code></td>
+<td>
+<p>fields to sum</p>
+</td></tr>
+<tr valign="top"><td><code>copy_fields</code></td>
+<td>
+<p>fields to copy. The first instance of each field will be
+copied to the aggregated feature.</p>
+</td></tr>
+<tr valign="top"><td><code>weight</code></td>
+<td>
+<p>Name of an attribute field for generating weighted centroids (points only).</p>
+</td></tr>
+<tr valign="top"><td><code>snap</code></td>
+<td>
+<p>Snap together vertices within a small distance threshold to fix
+small coordinate misalignment in adjacent polygons. Default <code>TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>force_FC</code></td>
+<td>
+<p>should the output be forced to be a <code>FeatureCollection</code> even
+if there are no attributes? Default <code>TRUE</code>.
+<code>FeatureCollections</code> are more compatible with <code>rgdal::readOGR</code> and
+<code>geojsonio::geojson_sp</code>. If <code>FALSE</code> and there are no attributes associated with
+the geometries, a <code>GeometryCollection</code> will be output. Ignored for <code>Spatial</code>
+objects, as the output is always the same class as the input.</p>
+</td></tr>
+<tr valign="top"><td><code>sys</code></td>
+<td>
+<p>Should the system mapshaper be used instead of the bundled mapshaper? Gives
+better performance on large files. Requires the mapshaper node package to be installed
+and on the PATH.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>the same class as the input
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+library(geojsonio)
+library(sp)
+
+poly &lt;- structure('{"type":"FeatureCollection",
+  "features":[
+  {"type":"Feature",
+  "properties":{"a": 1, "b": 2},
+  "geometry":{"type":"Polygon","coordinates":[[
+  [102,2],[102,3],[103,3],[103,2],[102,2]
+  ]]}}
+  ,{"type":"Feature",
+  "properties":{"a": 5, "b": 3},
+  "geometry":{"type":"Polygon","coordinates":[[
+  [100,0],[100,1],[101,1],[101,0],[100,0]
+  ]]}}]}', class = c("json", "geo_json"))
+poly &lt;- geojson_sp(poly)
+plot(poly)
+length(poly)
+poly@data
+
+# Dissolve the polygon
+out &lt;- ms_dissolve(poly)
+plot(out)
+length(out)
+out@data
+
+# Dissolve and summing columns
+out &lt;- ms_dissolve(poly, sum_fields = c("a", "b"))
+plot(out)
+out@data
+
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>rmapshaper</em> version 0.4.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

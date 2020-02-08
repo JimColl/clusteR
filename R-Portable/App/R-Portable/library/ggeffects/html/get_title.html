@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Get titles and labels from data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for get_title {ggeffects}"><tr><td>get_title {ggeffects}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Get titles and labels from data</h2>
+
+<h3>Description</h3>
+
+<p>Get variable and value labels from <code>ggeffects</code>-objects. Functions
+like <code>ggpredict()</code> or <code>ggeffect()</code> save
+information on variable names and value labels as additional attributes
+in the returned data frame. This is especially helpful for labelled
+data (see <a href="https://CRAN.R-project.org/package=sjlabelled"><span class="pkg">sjlabelled</span></a>), since these labels can be used to
+set axis labels and titles.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+get_title(x, case = NULL)
+
+get_x_title(x, case = NULL)
+
+get_y_title(x, case = NULL)
+
+get_legend_title(x, case = NULL)
+
+get_legend_labels(x, case = NULL)
+
+get_x_labels(x, case = NULL)
+
+get_complete_df(x, case = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>An object of class <code>ggeffects</code>, as returned by any ggeffects-function;
+for <code>get_complete_df()</code>, must be a list of <code>ggeffects</code>-objects.</p>
+</td></tr>
+<tr valign="top"><td><code>case</code></td>
+<td>
+<p>Desired target case. Labels will automatically converted into the
+specified character case. See <code><a href="../../sjlabelled/html/convert_case.html">convert_case</a></code> for
+more details on this argument.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>The titles or labels as character string, or <code>NULL</code>, if variables
+had no labels; <code>get_complete_df()</code> returns the input list <code>x</code>
+as single data frame, where the grouping variable indicates the
+marginal effects for each term.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+library(sjmisc)
+data(efc)
+efc$c172code &lt;- to_factor(efc$c172code)
+fit &lt;- lm(barthtot ~ c12hour + neg_c_7 + c161sex + c172code, data = efc)
+
+mydf &lt;- ggpredict(fit, terms = c("c12hour", "c161sex", "c172code"))
+
+library(ggplot2)
+ggplot(mydf, aes(x = x, y = predicted, colour = group)) +
+  stat_smooth(method = "lm") +
+  facet_wrap(~facet, ncol = 2) +
+  labs(
+    x = get_x_title(mydf),
+    y = get_y_title(mydf),
+    colour = get_legend_title(mydf)
+  )
+
+# get marginal effects, a list of data frames (one data frame per term)
+eff &lt;- ggeffect(fit)
+eff
+get_complete_df(eff)
+
+# get marginal effects for education only, and get x-axis-labels
+mydat &lt;- eff[["c172code"]]
+ggplot(mydat, aes(x = x, y = predicted, group = group)) +
+  stat_summary(fun.y = sum, geom = "line") +
+  scale_x_discrete(labels = get_x_labels(mydat))
+
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>ggeffects</em> version 0.14.1 <a href="00Index.html">Index</a>]</div>
+</body></html>

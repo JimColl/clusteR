@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Copy value and variable labels to (subsetted) data frames</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for copy_labels {sjlabelled}"><tr><td>copy_labels {sjlabelled}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Copy value and variable labels to (subsetted) data frames</h2>
+
+<h3>Description</h3>
+
+<p>Subsetting-functions usually drop value and variable labels from
+subsetted data frames (if the original data frame has value and variable
+label attributes). This function copies these value and variable
+labels back to subsetted data frames that have been subsetted, for instance,
+with <code><a href="../../base/html/subset.html">subset</a></code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+copy_labels(df_new, df_origin = NULL, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>df_new</code></td>
+<td>
+<p>The new, subsetted data frame.</p>
+</td></tr>
+<tr valign="top"><td><code>df_origin</code></td>
+<td>
+<p>The original data frame where the subset (<code>df_new</code>) stems from;
+use <code>NULL</code>, if value and variable labels from <code>df_new</code> should be removed.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>Optional, unquoted names of variables that should be selected for
+further processing. Required, if <code>x</code> is a data frame (and no
+vector) and only selected variables from <code>x</code> should be processed.
+You may also use functions like <code>:</code> or tidyselect's
+<code><a href="../../tidyselect/html/select_helpers.html">select_helpers</a></code>.
+See 'Examples'.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>Returns <code>df_new</code> with either removed value and variable label attributes
+(if <code>df_origin = NULL</code>) or with copied value and variable label
+attributes (if <code>df_origin</code> was the original subsetted data frame).
+</p>
+
+
+<h3>Note</h3>
+
+<p>In case <code>df_origin = NULL</code>, all possible label attributes
+from <code>df_new</code> are removed.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+library(dplyr)
+data(efc)
+
+# create subset - drops label attributes
+efc.sub &lt;- subset(efc, subset = e16sex == 1, select = c(4:8))
+str(efc.sub)
+
+# copy back attributes from original dataframe
+efc.sub &lt;- copy_labels(efc.sub, efc)
+str(efc.sub)
+
+# remove all labels
+efc.sub &lt;- copy_labels(efc.sub)
+str(efc.sub)
+
+# create subset - drops label attributes
+efc.sub &lt;- subset(efc, subset = e16sex == 1, select = c(4:8))
+# create subset with dplyr's select - attributes are preserved
+efc.sub2 &lt;- select(efc, c160age, e42dep, neg_c_7, c82cop1, c84cop3)
+
+# copy labels from those columns that are available
+copy_labels(efc.sub, efc.sub2) %&gt;% str()
+
+# copy labels from only some columns
+copy_labels(efc.sub, efc, e42dep) %&gt;% str()
+copy_labels(efc.sub, efc, -e17age) %&gt;% str()
+
+
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>sjlabelled</em> version 1.1.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Delete fields in the attribute table</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for ms_filter_fields {rmapshaper}"><tr><td>ms_filter_fields {rmapshaper}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Delete fields in the attribute table</h2>
+
+<h3>Description</h3>
+
+<p>Removes all fields except those listed in the <code>fields</code> parameter
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ms_filter_fields(input, fields, sys = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>input</code></td>
+<td>
+<p>spatial object to filter fields on. One of:
+</p>
+
+<ul>
+<li> <p><code>geo_json</code> or <code>character</code> points, lines, or polygons;
+</p>
+</li>
+<li> <p><code>geo_list</code> points, lines, or polygons;
+</p>
+</li>
+<li> <p><code>SpatialPolygonsDataFrame</code>, <code>SpatialLinesDataFrame</code>, <code>SpatialPointsDataFrame</code>;
+</p>
+</li>
+<li> <p><code>sf</code> object
+</p>
+</li></ul>
+</td></tr>
+<tr valign="top"><td><code>fields</code></td>
+<td>
+<p>character vector of fields to retain.</p>
+</td></tr>
+<tr valign="top"><td><code>sys</code></td>
+<td>
+<p>Should the system mapshaper be used instead of the bundled mapshaper? Gives
+better performance on large files. Requires the mapshaper node package to be installed
+and on the PATH.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>object with only specified attributes retained, in the same class as
+the input
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+library(geojsonio)
+library(sp)
+
+poly &lt;- structure("{\"type\":\"FeatureCollection\",
+                  \"features\":[{\"type\":\"Feature\",
+                  \"properties\":{\"a\": 1, \"b\":2, \"c\": 3},
+                  \"geometry\":{\"type\":\"Polygon\",
+                  \"coordinates\":[[[102,2],[102,4],[104,4],[104,2],[102,2]]]}}]}",
+                  class = c("json", "geo_json"))
+poly &lt;- geojson_sp(poly)
+poly@data
+
+# Filter (keep) fields a and b, drop c
+out &lt;- ms_filter_fields(poly, c("a", "b"))
+out@data
+
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>rmapshaper</em> version 0.4.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

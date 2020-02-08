@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Topologically-aware geometry simplification.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for ms_simplify {rmapshaper}"><tr><td>ms_simplify {rmapshaper}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Topologically-aware geometry simplification.</h2>
+
+<h3>Description</h3>
+
+<p>Uses <a href="https://github.com/mbloch/mapshaper">mapshaper</a> to simplify
+polygons.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ms_simplify(
+  input,
+  keep = 0.05,
+  method = NULL,
+  weighting = 0.7,
+  keep_shapes = FALSE,
+  no_repair = FALSE,
+  snap = TRUE,
+  explode = FALSE,
+  force_FC = TRUE,
+  drop_null_geometries = TRUE,
+  snap_interval = NULL,
+  sys = FALSE
+)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>input</code></td>
+<td>
+<p>spatial object to simplify. One of:
+</p>
+
+<ul>
+<li> <p><code>geo_json</code> or <code>character</code> polygons or lines;
+</p>
+</li>
+<li> <p><code>geo_list</code> polygons or lines;
+</p>
+</li>
+<li> <p><code>SpatialPolygons*</code> or <code>SpatialLines*</code>;
+</p>
+</li>
+<li> <p><code>sf</code> or <code>sfc</code> polygons or lines object
+</p>
+</li></ul>
+</td></tr>
+<tr valign="top"><td><code>keep</code></td>
+<td>
+<p>proportion of points to retain (0-1; default 0.05)</p>
+</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+<p>simplification method to use: <code>"vis"</code> for Visvalingam
+algorithm, or <code>"dp"</code> for Douglas-Peuker algorithm. If left as
+<code>NULL</code> (default), uses Visvalingam simplification but modifies the
+area metric by underweighting the effective area of points at the vertex of
+more acute angles, resulting in a smoother appearance. See this
+<a href="https://github.com/mbloch/mapshaper/wiki/Simplification-Tips">https://github.com/mbloch/mapshaper/wiki/Simplification-Tips</a>link
+for more information.</p>
+</td></tr>
+<tr valign="top"><td><code>weighting</code></td>
+<td>
+<p>Coefficient for weighting Visvalingam simplification
+(default is 0.7). Higher values produce smoother output. weighting=0 is
+equivalent to unweighted Visvalingam simplification.</p>
+</td></tr>
+<tr valign="top"><td><code>keep_shapes</code></td>
+<td>
+<p>Prevent small polygon features from disappearing at high
+simplification (default <code>FALSE</code>)</p>
+</td></tr>
+<tr valign="top"><td><code>no_repair</code></td>
+<td>
+<p>disable intersection repair after simplification (default
+<code>FALSE</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>snap</code></td>
+<td>
+<p>Snap together vertices within a small distance threshold to fix
+small coordinate misalignment in adjacent polygons. Default <code>TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>explode</code></td>
+<td>
+<p>Should multipart polygons be converted to singlepart polygons?
+This prevents small shapes from disappearing during simplification if
+<code>keep_shapes = TRUE</code>. Default <code>FALSE</code></p>
+</td></tr>
+<tr valign="top"><td><code>force_FC</code></td>
+<td>
+<p>should the output be forced to be a <code>FeatureCollection</code>
+even if there are no attributes? Default <code>TRUE</code>.
+<code>FeatureCollections</code> are more compatible with <code>rgdal::readOGR</code>
+and <code>geojsonio::geojson_sp</code>. If <code>FALSE</code> and there are no
+attributes associated with the geometries, a <code>GeometryCollection</code> will
+be output. Ignored for <code>Spatial</code> objects, as the output is always the
+same class as the input.</p>
+</td></tr>
+<tr valign="top"><td><code>drop_null_geometries</code></td>
+<td>
+<p>should Features with null geometries be dropped?
+Ignored for <code>Spatial*</code> objects, as it is always <code>TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>snap_interval</code></td>
+<td>
+<p>Specify snapping distance in source units, must be a
+numeric. Default <code>NULL</code></p>
+</td></tr>
+<tr valign="top"><td><code>sys</code></td>
+<td>
+<p>Should the system mapshaper be used instead of the bundled mapshaper? Gives
+better performance on large files. Requires the mapshaper node package to be installed
+and on the PATH.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>a simplified representation of the geometry in the same class as the
+input
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# With a simple geojson object
+poly &lt;- structure('{
+ "type": "Feature",
+ "properties": {},
+ "geometry": {
+   "type": "Polygon",
+   "coordinates": [[
+     [-70.603637, -33.399918],
+     [-70.614624, -33.395332],
+     [-70.639343, -33.392466],
+     [-70.659942, -33.394759],
+     [-70.683975, -33.404504],
+     [-70.697021, -33.419406],
+     [-70.701141, -33.434306],
+     [-70.700454, -33.446339],
+     [-70.694274, -33.458369],
+     [-70.682601, -33.465816],
+     [-70.668869, -33.472117],
+     [-70.646209, -33.473835],
+     [-70.624923, -33.472117],
+     [-70.609817, -33.468107],
+     [-70.595397, -33.458369],
+     [-70.587158, -33.442901],
+     [-70.587158, -33.426283],
+     [-70.590591, -33.414248],
+     [-70.594711, -33.406224],
+     [-70.603637, -33.399918]
+   ]]
+ }
+}', class = c("json", "geo_json"))
+
+ms_simplify(poly, keep = 0.1)
+
+# With a SpatialPolygonsDataFrame:
+
+poly_sp &lt;- geojsonio::geojson_sp(poly)
+ms_simplify(poly_sp, keep = 0.5)
+
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>rmapshaper</em> version 0.4.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

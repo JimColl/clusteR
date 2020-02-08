@@ -1,0 +1,12 @@
+checkboxInput3          Create a side-by-side checkboxInput
+dateInput3              Create a side-by-side dateInput
+editData                A shiny app for editing a 'data.frame'
+editableDT              Server function of editData Shiny module
+editableDTUI            UI of editData Shiny module
+label3                  Create a side-by-side label
+numericInput3           Create a side-by-side numericInput
+radioButtons3           Create a side-by-side radioButtons
+sampleData              Sample Data for testing 'editData' addin
+selectInput3            Create a side-by-side selectInput
+textInput3              Create a side-by-side textInput control for
+                        entry of unstructured text values

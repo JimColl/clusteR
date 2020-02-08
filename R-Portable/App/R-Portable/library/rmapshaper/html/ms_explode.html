@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Convert multipart lines or polygons to singlepart</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for ms_explode {rmapshaper}"><tr><td>ms_explode {rmapshaper}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Convert multipart lines or polygons to singlepart</h2>
+
+<h3>Description</h3>
+
+<p>For objects of class <code>Spatial</code> (e.g., <code>SpatialPolygonsDataFrame</code>),
+you may find it faster to use <code>sp::disaggregate</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ms_explode(input, force_FC = TRUE, sys = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>input</code></td>
+<td>
+<p>One of:
+</p>
+
+<ul>
+<li> <p><code>geo_json</code> or <code>character</code> multipart lines, or polygons;
+</p>
+</li>
+<li> <p><code>geo_list</code> multipart lines, or polygons;
+</p>
+</li>
+<li><p> multipart <code>SpatialPolygons</code>, <code>SpatialLines</code>;
+</p>
+</li>
+<li> <p><code>sf</code> or <code>sfc</code> multipart lines, or polygons object
+</p>
+</li></ul>
+</td></tr>
+<tr valign="top"><td><code>force_FC</code></td>
+<td>
+<p>should the output be forced to be a <code>FeatureCollection</code> even
+if there are no attributes? Default <code>TRUE</code>.
+<code>FeatureCollections</code> are more compatible with <code>rgdal::readOGR</code> and
+<code>geojsonio::geojson_sp</code>. If <code>FALSE</code> and there are no attributes associated with
+the geometries, a <code>GeometryCollection</code> will be output. Ignored for <code>Spatial</code>
+objects, as the output is always the same class as the input.</p>
+</td></tr>
+<tr valign="top"><td><code>sys</code></td>
+<td>
+<p>Should the system mapshaper be used instead of the bundled mapshaper? Gives
+better performance on large files. Requires the mapshaper node package to be installed
+and on the PATH.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>There is currently no method for SpatialMultiPoints
+</p>
+
+
+<h3>Value</h3>
+
+<p>same class as input
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+library(geojsonio)
+library(sp)
+
+poly &lt;- structure("{\"type\":\"FeatureCollection\",\"crs\":
+          {\"type\":\"name\",\"properties\":{\"name\":
+          \"urn:ogc:def:crs:OGC:1.3:CRS84\"}},\"features\":
+          [\n{\"type\":\"Feature\",\"geometry\":{\"type\":
+          \"MultiPolygon\",\"coordinates\":[[[[102,2],[102,3],
+          [103,3],[103,2],[102,2]]],[[[100,0],[100,1],[101,1],
+          [101,0],[100,0]]]]},\"properties\":{\"rmapshaperid\":0}}\n]}",
+          class = c("json", "geo_json"))
+
+poly &lt;- geojson_sp(poly)
+plot(poly)
+length(poly)
+poly@data
+
+# Explode the polygon
+out &lt;- ms_explode(poly)
+plot(out)
+length(out)
+out@data
+
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>rmapshaper</em> version 0.4.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

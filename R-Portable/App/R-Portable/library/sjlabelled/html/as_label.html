@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Convert variable into factor with associated value labels</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for as_character {sjlabelled}"><tr><td>as_character {sjlabelled}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Convert variable into factor with associated value labels</h2>
+
+<h3>Description</h3>
+
+<p><code>as_label()</code> converts (replaces) values of a variable (also of factors
+or character vectors) with their associated value labels. Might
+be helpful for factor variables.
+For instance, if you have a Gender variable with 0/1 value, and associated
+labels are male/female, this function would convert all 0 to male and
+all 1 to female and returns the new variable as factor.
+<code>as_character()</code> does the same as <code>as_label()</code>, but returns
+a character vector.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+as_character(x, ...)
+
+## S3 method for class 'data.frame'
+as_character(
+  x,
+  ...,
+  add.non.labelled = FALSE,
+  prefix = FALSE,
+  var.label = NULL,
+  drop.na = TRUE,
+  drop.levels = FALSE,
+  keep.labels = FALSE
+)
+
+as_label(x, ...)
+
+## S3 method for class 'data.frame'
+as_label(
+  x,
+  ...,
+  add.non.labelled = FALSE,
+  prefix = FALSE,
+  var.label = NULL,
+  drop.na = TRUE,
+  drop.levels = FALSE,
+  keep.labels = FALSE
+)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>A vector or data frame.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>Optional, unquoted names of variables that should be selected for
+further processing. Required, if <code>x</code> is a data frame (and no
+vector) and only selected variables from <code>x</code> should be processed.
+You may also use functions like <code>:</code> or tidyselect's
+<code><a href="../../tidyselect/html/select_helpers.html">select_helpers</a></code>.
+See 'Examples'.</p>
+</td></tr>
+<tr valign="top"><td><code>add.non.labelled</code></td>
+<td>
+<p>Logical, if <code>TRUE</code>, values without associated
+value label will also be converted to labels (as is). See 'Examples'.</p>
+</td></tr>
+<tr valign="top"><td><code>prefix</code></td>
+<td>
+<p>Logical, if <code>TRUE</code>, the value labels used as factor levels
+or character values will be prefixed with their associated values. See 'Examples'.</p>
+</td></tr>
+<tr valign="top"><td><code>var.label</code></td>
+<td>
+<p>Optional string, to set variable label attribute for the
+returned variable (see vignette <a href="../doc/intro_sjlabelled.html">Labelled Data and the sjlabelled-Package</a>).
+If <code>NULL</code> (default), variable label attribute of <code>x</code> will
+be used (if present). If empty, variable label attributes will be removed.</p>
+</td></tr>
+<tr valign="top"><td><code>drop.na</code></td>
+<td>
+<p>Logical, if <code>TRUE</code>, tagged <code>NA</code> values with value labels
+will be converted to regular NA's. Else, tagged <code>NA</code> values will be replaced
+with their value labels. See 'Examples' and <code><a href="get_na.html">get_na</a></code>.</p>
+</td></tr>
+<tr valign="top"><td><code>drop.levels</code></td>
+<td>
+<p>Logical, if <code>TRUE</code>, unused factor levels will be
+dropped (i.e. <code><a href="../../base/html/droplevels.html">droplevels</a></code> will be applied before returning
+the result).</p>
+</td></tr>
+<tr valign="top"><td><code>keep.labels</code></td>
+<td>
+<p>Logical, if <code>TRUE</code>, value labels are preserved This
+allows users to quickly convert back factors to numeric vectors with
+<code>as_numeric()</code>.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>See 'Details' in <code><a href="get_na.html">get_na</a></code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>A factor with the associated value labels as factor levels. If <code>x</code>
+is a data frame, the complete data frame <code>x</code> will be returned,
+where variables specified in <code>...</code> are coerced to factors;
+if <code>...</code> is not specified, applies to all variables in the
+data frame. <code>as_character()</code> returns a character vector.
+</p>
+
+
+<h3>Note</h3>
+
+<p>Value label attributes (see <code><a href="get_labels.html">get_labels</a></code>)
+will be removed when converting variables to factors.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(efc)
+print(get_labels(efc)['c161sex'])
+head(efc$c161sex)
+head(as_label(efc$c161sex))
+
+print(get_labels(efc)['e42dep'])
+table(efc$e42dep)
+table(as_label(efc$e42dep))
+
+head(efc$e42dep)
+head(as_label(efc$e42dep))
+
+# structure of numeric values won't be changed
+# by this function, it only applies to labelled vectors
+# (typically categorical or factor variables)
+
+str(efc$e17age)
+str(as_label(efc$e17age))
+
+
+# factor with non-numeric levels
+as_label(factor(c("a", "b", "c")))
+
+# factor with non-numeric levels, prefixed
+x &lt;- factor(c("a", "b", "c"))
+x &lt;- set_labels(x, labels = c("ape", "bear", "cat"))
+as_label(x, prefix = TRUE)
+
+
+# create vector
+x &lt;- c(1, 2, 3, 2, 4, NA)
+# add less labels than values
+x &lt;- set_labels(
+  x,
+  labels = c("yes", "maybe", "no"),
+  force.labels = FALSE,
+  force.values = FALSE
+)
+
+# convert to label w/o non-labelled values
+as_label(x)
+
+# convert to label, including non-labelled values
+as_label(x, add.non.labelled = TRUE)
+
+
+# create labelled integer, with missing flag
+library(haven)
+x &lt;- labelled(
+  c(1:3, tagged_na("a", "c", "z"), 4:1, 2:3),
+  c("Agreement" = 1, "Disagreement" = 4, "First" = tagged_na("c"),
+    "Refused" = tagged_na("a"), "Not home" = tagged_na("z"))
+)
+
+# to labelled factor, with missing labels
+as_label(x, drop.na = FALSE)
+
+# to labelled factor, missings removed
+as_label(x, drop.na = TRUE)
+
+# keep missings, and use non-labelled values as well
+as_label(x, add.non.labelled = TRUE, drop.na = FALSE)
+
+
+# convert labelled character to factor
+dummy &lt;- c("M", "F", "F", "X")
+dummy &lt;- set_labels(
+  dummy,
+  labels = c(`M` = "Male", `F` = "Female", `X` = "Refused")
+)
+get_labels(dummy,, "p")
+as_label(dummy)
+
+# drop unused factor levels, but preserve variable label
+x &lt;- factor(c("a", "b", "c"), levels = c("a", "b", "c", "d"))
+x &lt;- set_labels(x, labels = c("ape", "bear", "cat"))
+set_label(x) &lt;- "A factor!"
+x
+as_label(x, drop.levels = TRUE)
+
+# change variable label
+as_label(x, var.label = "New variable label!", drop.levels = TRUE)
+
+
+# convert to numeric and back again, preserving label attributes
+# *and* values in numeric vector
+x &lt;- c(0, 1, 0, 4)
+x &lt;- set_labels(x, labels = c(`null` = 0, `one` = 1, `four` = 4))
+
+# to factor
+as_label(x)
+
+# to factor, back to numeric - values are 1, 2 and 3,
+# instead of original 0, 1 and 4
+as_numeric(as_label(x))
+
+# preserve label-attributes when converting to factor, use these attributes
+# to restore original numeric values when converting back to numeric
+as_numeric(as_label(x, keep.labels = TRUE), use.labels = TRUE)
+
+
+# easily coerce specific variables in a data frame to factor
+# and keep other variables, with their class preserved
+as_label(efc, e42dep, e16sex, c172code)
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>sjlabelled</em> version 1.1.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

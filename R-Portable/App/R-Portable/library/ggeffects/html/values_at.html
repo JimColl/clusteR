@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Calculate representative values of a vector</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for values_at {ggeffects}"><tr><td>values_at {ggeffects}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Calculate representative values of a vector</h2>
+
+<h3>Description</h3>
+
+<p>This function calculates representative values of a vector,
+like minimum/maximum values or lower, median and upper quartile etc.,
+which can be used for numeric vectors to plot marginal effects at these
+representative values.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+values_at(x, values = "meansd")
+
+representative_values(x, values = "meansd")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>A numeric vector.</p>
+</td></tr>
+<tr valign="top"><td><code>values</code></td>
+<td>
+<p>Character vector, naming a pattern for which representative values
+should be calculcated.
+</p>
+
+<dl>
+<dt><code>"minmax"</code></dt><dd><p>(default) minimum and maximum values (lower and upper bounds) of the moderator are used to plot the interaction between independent variable and moderator.</p>
+</dd>
+<dt><code>"meansd"</code></dt><dd><p>uses the mean value of the moderator as well as one standard deviation below and above mean value to plot the effect of the moderator on the independent variable.</p>
+</dd>
+<dt><code>"zeromax"</code></dt><dd><p>is similar to the <code>"minmax"</code> option, however, <code>0</code> is always used as minimum value for the moderator. This may be useful for predictors that don't have an empirical zero-value, but absence of moderation should be simulated by using 0 as minimum.</p>
+</dd>
+<dt><code>"quart"</code></dt><dd><p>calculates and uses the quartiles (lower, median and upper) of the moderator value, <em>including</em> minimum and maximum value.</p>
+</dd>
+<dt><code>"quart2"</code></dt><dd><p>calculates and uses the quartiles (lower, median and upper) of the moderator value, <em>excluding</em> minimum and maximum value.</p>
+</dd>
+<dt><code>"all"</code></dt><dd><p>uses all values of the moderator variable. Note that this option only applies to <code>type = "eff"</code>, for numeric moderator values.</p>
+</dd>
+</dl>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>A numeric vector of length two or three, representing the required
+values from <code>x</code>, like minimum/maximum value or mean and +/- 1 SD.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(efc)
+values_at(efc$c12hour)
+values_at(efc$c12hour, "quart2")
+
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>ggeffects</em> version 0.14.1 <a href="00Index.html">Index</a>]</div>
+</body></html>

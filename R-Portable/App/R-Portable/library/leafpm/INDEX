@@ -1,0 +1,8 @@
+addPmToolbar            Add 'leaflet-pm' Toolbar to a Leaflet
+                        'htmlwidget'
+pmCutOptions            Set Options for 'leaflet.pm' Cut Mode
+pmDependencies          Dependencies for 'leaflet-pm'
+pmDrawOptions           Set Options for 'leaflet.pm' Draw Mode
+pmEditOptions           Set Options for 'leaflet.pm' Edit Mode
+pmToolbarOptions        Set Options for 'leaflet.pm' Toolbar
+removePmToolbar         Removes the 'leaflet.pm' toolbar

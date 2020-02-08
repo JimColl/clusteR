@@ -1,0 +1,266 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Plot ggeffects-objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for plot {ggeffects}"><tr><td>plot {ggeffects}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Plot ggeffects-objects</h2>
+
+<h3>Description</h3>
+
+<p>A generic plot-method for <code>ggeffects</code>-objects.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'ggeffects'
+plot(
+  x,
+  ci = TRUE,
+  ci.style = c("ribbon", "errorbar", "dash", "dot"),
+  facets,
+  add.data = FALSE,
+  colors = "Set1",
+  alpha = 0.15,
+  dodge = 0.25,
+  use.theme = TRUE,
+  dot.alpha = 0.35,
+  jitter = 0.2,
+  log.y = FALSE,
+  case = NULL,
+  show.legend = TRUE,
+  show.title = TRUE,
+  show.x.title = TRUE,
+  show.y.title = TRUE,
+  dot.size = NULL,
+  line.size = NULL,
+  connect.lines = FALSE,
+  grid,
+  one.plot = TRUE,
+  rawdata,
+  ...
+)
+
+theme_ggeffects(base_size = 11, base_family = "")
+
+show_pals()
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>An object of class <code>ggeffects</code>, as returned by the functions
+from this package.</p>
+</td></tr>
+<tr valign="top"><td><code>ci</code></td>
+<td>
+<p>Logical, if <code>TRUE</code>, confidence bands (for continuous variables
+at x-axis) resp. error bars (for factors at x-axis) are plotted.</p>
+</td></tr>
+<tr valign="top"><td><code>ci.style</code></td>
+<td>
+<p>Character vector, indicating the style of the confidence
+bands. May be either <code>"ribbon"</code>, <code>"errorbar"</code>, <code>"dash"</code> or
+<code>"dot"</code>, to plot a ribbon, error bars, or dashed or dotted lines as
+confidence bands.</p>
+</td></tr>
+<tr valign="top"><td><code>facets, grid</code></td>
+<td>
+<p>Logical, defaults to <code>TRUE</code>, if <code>x</code> has a column named
+<code>facet</code>, and defaults to <code>FALSE</code>, if <code>x</code> has no such
+column. Set <code>facets = TRUE</code> to wrap the plot into facets even
+for grouping variables (see 'Examples'). <code>grid</code> is an alias for
+<code>facets</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>add.data, rawdata</code></td>
+<td>
+<p>Logical, if <code>TRUE</code>, a layer with raw data from response by
+predictor on the x-axis, plotted as point-geoms, is added to the plot.</p>
+</td></tr>
+<tr valign="top"><td><code>colors</code></td>
+<td>
+<p>Character vector with color values in hex-format, valid
+color value names (see <code>demo("colors")</code>) or a name of a
+ggeffects-color-palette.
+Following options are valid for <code>colors</code>:
+</p>
+
+<ul>
+<li><p> If not specified, the color brewer palette &quot;Set1&quot; will be used.
+</p>
+</li>
+<li><p> If <code>"gs"</code>, a greyscale will be used.
+</p>
+</li>
+<li><p> If <code>"bw"</code>, the plot is black/white and uses different line types to distinguish groups.
+</p>
+</li>
+<li><p> There are some pre-defined color-palettes in this package that can be used, e.g. <code>colors = "metro"</code>. See <code><a href="plot.html">show_pals()</a></code> to show all available palettes.
+</p>
+</li>
+<li><p> Else specify own color values or names as vector (e.g. <code>colors = c("#f00000", "#00ff00")</code>).
+</p>
+</li></ul>
+</td></tr>
+<tr valign="top"><td><code>alpha</code></td>
+<td>
+<p>Alpha value for the confidence bands.</p>
+</td></tr>
+<tr valign="top"><td><code>dodge</code></td>
+<td>
+<p>Value for offsetting or shifting error bars, to avoid overlapping.
+Only applies, if a factor is plotted at the x-axis (in such cases, the
+confidence bands are replaced by error bars automatically), or if
+<code>ci.style = "errorbars"</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>use.theme</code></td>
+<td>
+<p>Logical, if <code>TRUE</code>, a slightly tweaked version of ggplot's
+minimal-theme, <code>theme_ggeffects()</code>, is applied to the plot. If
+<code>FALSE</code>, no theme-modifications are applied.</p>
+</td></tr>
+<tr valign="top"><td><code>dot.alpha</code></td>
+<td>
+<p>Alpha value for data points, when <code>add.data = TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>jitter</code></td>
+<td>
+<p>Numeric, between 0 and 1. If not <code>NULL</code> and
+<code>add.data = TRUE</code>, adds a small amount of random variation to
+the location of data points dots, to avoid overplotting. Hence the
+points don't reflect exact values in the data. May also be a numeric
+vector of length two, to add different horizontal and vertical jittering.
+For binary outcomes, raw data is not jittered by default to avoid that
+data points exceed the axis limits.</p>
+</td></tr>
+<tr valign="top"><td><code>log.y</code></td>
+<td>
+<p>Logical, if <code>TRUE</code>, the y-axis scale is log-transformed.
+This might be useful for binomial models with predicted probabilities on
+the y-axis.</p>
+</td></tr>
+<tr valign="top"><td><code>case</code></td>
+<td>
+<p>Desired target case. Labels will automatically converted into the
+specified character case. See <code><a href="../../sjlabelled/html/convert_case.html">convert_case</a></code> for
+more details on this argument.</p>
+</td></tr>
+<tr valign="top"><td><code>show.legend</code></td>
+<td>
+<p>Logical, shows or hides the plot legend.</p>
+</td></tr>
+<tr valign="top"><td><code>show.title</code></td>
+<td>
+<p>Logical, shows or hides the plot title-</p>
+</td></tr>
+<tr valign="top"><td><code>show.x.title</code></td>
+<td>
+<p>Logical, shows or hides the plot title for the x-axis.</p>
+</td></tr>
+<tr valign="top"><td><code>show.y.title</code></td>
+<td>
+<p>Logical, shows or hides the plot title for the y-axis.</p>
+</td></tr>
+<tr valign="top"><td><code>dot.size</code></td>
+<td>
+<p>Numeric, size of the point geoms.</p>
+</td></tr>
+<tr valign="top"><td><code>line.size</code></td>
+<td>
+<p>Numeric, size of the line geoms.</p>
+</td></tr>
+<tr valign="top"><td><code>connect.lines</code></td>
+<td>
+<p>Logical, if <code>TRUE</code> and plot has point-geoms with
+error bars (this is usually the case when the x-axis is discrete), points
+of same groups will be connected with a line.</p>
+</td></tr>
+<tr valign="top"><td><code>one.plot</code></td>
+<td>
+<p>Logical, if <code>TRUE</code> and <code>x</code> has a <code>panel</code> column
+(i.e. when four <code>terms</code> were used), a single, integrated plot is produced.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>Further arguments passed down to <code>ggplot::scale_y*()</code>, to
+control the appearance of the y-axis.</p>
+</td></tr>
+<tr valign="top"><td><code>base_size</code></td>
+<td>
+<p>Base font size.</p>
+</td></tr>
+<tr valign="top"><td><code>base_family</code></td>
+<td>
+<p>Base font family.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>For proportional odds logistic regression (see <code><a href="../../MASS/html/polr.html">polr</a></code>)
+or cumulative link models in general, plots are automatically facetted
+by <code>response.level</code>, which indicates the grouping of predictions
+based on the level of the model's response.
+</p>
+
+
+<h3>Value</h3>
+
+<p>A ggplot2-object.
+</p>
+
+
+<h3>Note</h3>
+
+<p>Load <code>library(ggplot2)</code> and use <code>theme_set(theme_ggeffects())</code>
+to set the <span class="pkg">ggeffects</span>-theme as default plotting theme. You can then use
+further plot-modifiers from <span class="pkg">sjPlot</span>, like <code>legend_style()</code> or
+<code>font_size()</code> without losing the theme-modifications.
+<br /> <br />
+There are pre-defined colour palettes in this package. Use
+<code>show_pals()</code> to show all available colour palettes.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+library(sjlabelled)
+data(efc)
+efc$c172code &lt;- as_label(efc$c172code)
+fit &lt;- lm(barthtot ~ c12hour + neg_c_7 + c161sex + c172code, data = efc)
+
+dat &lt;- ggpredict(fit, terms = "c12hour")
+plot(dat)
+
+
+# facet by group, use pre-defined color palette
+dat &lt;- ggpredict(fit, terms = c("c12hour", "c172code"))
+plot(dat, facet = TRUE, colors = "hero")
+
+# don't use facets, b/w figure, w/o confidence bands
+dat &lt;- ggpredict(fit, terms = c("c12hour", "c172code"))
+plot(dat, colors = "bw", ci = FALSE)
+
+# factor at x axis, plot exact data points and error bars
+dat &lt;- ggpredict(fit, terms = c("c172code", "c161sex"))
+plot(dat)
+
+# for three variables, automatic facetting
+dat &lt;- ggpredict(fit, terms = c("c12hour", "c172code", "c161sex"))
+plot(dat)
+
+# show all color palettes
+show_pals()
+
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>ggeffects</em> version 0.14.1 <a href="00Index.html">Index</a>]</div>
+</body></html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: rmapshaper: Client for 'mapshaper' for 'Geospatial'...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for rmapshaper {rmapshaper}"><tr><td>rmapshaper {rmapshaper}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>rmapshaper: Client for 'mapshaper' for 'Geospatial' Operations</h2>
+
+<h3>Description</h3>
+
+<p>Edit and simplify 'geojson', 'Spatial', and 'sf' objects.
+This is wrapper around the 'mapshaper' 'javascript' library by Matthew Bloch
+<a href="https://github.com/mbloch/mapshaper/">https://github.com/mbloch/mapshaper/</a> to perform topologically-aware
+polygon simplification, as well as other operations such as clipping,
+erasing, dissolving, and converting 'multi-part' to 'single-part' geometries.
+It relies on the 'geojsonio' package for working with 'geojson' objects, the 'sf'
+package for working with 'sf' objects, and the 'sp' and 'rgdal' packages for
+working with 'Spatial' objects.
+</p>
+
+
+<h3>rmapshaper functions</h3>
+
+<p>All functions
+</p>
+
+<ul>
+<li> <p><code><a href="ms_simplify.html">ms_simplify</a></code> - simplify polygons or lines
+</p>
+</li>
+<li> <p><code><a href="ms_clip.html">ms_clip</a></code> - clip an area out of a layer using a polygon layer or a bounding box. Works on polygons, lines, and points
+</p>
+</li>
+<li> <p><code><a href="ms_erase.html">ms_erase</a></code> - erase an area from a layer using a polygon layer or a bounding box. Works on polygons, lines, and points
+</p>
+</li>
+<li> <p><code><a href="ms_dissolve.html">ms_dissolve</a></code> - aggregate polygon features, optionally specifying a field to aggregate on. If no field is specified, will merge all polygons into one.
+</p>
+</li>
+<li> <p><code><a href="ms_explode.html">ms_explode</a></code> - convert multipart shapes to single part. Works with polygons, lines, and points in geojson format, but currently only with polygons and lines in the <code>Spatial</code> classes (not <code>SpatialMultiPoints</code> and <code>SpatialMultiPointsDataFrame</code>).
+</p>
+</li>
+<li> <p><code><a href="ms_lines.html">ms_lines</a></code> - convert polygons to topological boundaries (lines)
+</p>
+</li>
+<li> <p><code><a href="ms_innerlines.html">ms_innerlines</a></code> - convert polygons to shared inner boundaries (lines)
+</p>
+</li>
+<li> <p><code><a href="ms_points.html">ms_points</a></code> - create points from a polygon layer
+</p>
+</li>
+<li> <p><code><a href="ms_filter_fields.html">ms_filter_fields</a></code> - Remove fields from the attributes
+</p>
+</li>
+<li> <p><code><a href="ms_filter_islands.html">ms_filter_islands</a></code> - Remove small detached polygons
+</p>
+</li></ul>
+
+
+
+<h3>Author(s)</h3>
+
+<p>Andy Teucher <a href="mailto:andy.teucher@gmail.com">andy.teucher@gmail.com</a>
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>rmapshaper</em> version 0.4.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

@@ -1,0 +1,577 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Marginal effects and estimated marginal means from regression...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for ggeffect {ggeffects}"><tr><td>ggeffect {ggeffects}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Marginal effects and estimated marginal means from regression models</h2>
+
+<h3>Description</h3>
+
+<p>The <span class="pkg">ggeffects</span> package computes estimated marginal means (predicted values) for the
+response, at the margin of specific values or levels from certain model terms,
+i.e. it generates predictions by a model by holding the non-focal variables
+constant and varying the focal variable(s). <br /> <br />
+<code>ggpredict()</code> uses <code>predict()</code> for generating predictions,
+while <code>ggeffect()</code> computes marginal effects by internally calling
+<code><a href="../../effects/html/Effect.html">Effect</a></code> and <code>ggemmeans()</code> uses <code><a href="../../emmeans/html/emmeans.html">emmeans</a></code>.
+The result is returned as consistent data frame.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ggeffect(model, terms, ci.lvl = 0.95, ...)
+
+ggemmeans(
+  model,
+  terms,
+  ci.lvl = 0.95,
+  type = "fe",
+  typical = "mean",
+  condition = NULL,
+  back.transform = TRUE,
+  ...
+)
+
+ggpredict(
+  model,
+  terms,
+  ci.lvl = 0.95,
+  type = "fe",
+  typical = "mean",
+  condition = NULL,
+  back.transform = TRUE,
+  ppd = FALSE,
+  vcov.fun = NULL,
+  vcov.type = NULL,
+  vcov.args = NULL,
+  interval = "confidence",
+  ...
+)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>model</code></td>
+<td>
+<p>A fitted model object, or a list of model objects. Any model
+that supports common methods like <code>predict()</code>, <code>family()</code>
+or <code>model.frame()</code> should work. For <code>ggeffect()</code>, any model
+that is supported by <a href="https://CRAN.R-project.org/package=effects"><span class="pkg">effects</span></a> should work, and for
+<code>ggemmeans()</code>, all models supported by <a href="https://CRAN.R-project.org/package=emmeans"><span class="pkg">emmeans</span></a> should work.</p>
+</td></tr>
+<tr valign="top"><td><code>terms</code></td>
+<td>
+<p>Character vector (or a formula) with the names of those terms
+from <code>model</code>, for which marginal effects should be displayed. At least
+one term is required to calculate effects for certain terms, maximum length is
+four terms, where the second to fourth term indicate the groups, i.e.
+predictions of first term are grouped at the values or levels of the remaining
+terms. If <code>terms</code> is missing or <code>NULL</code>, marginal effects for each
+model term are calculated. It is also possible to define specific values for
+terms, at which marginal effects should be calculated (see 'Details').
+All remaining covariates that are not specified in <code>terms</code> are held
+constant (see 'Details'). See also arguments <code>condition</code> and <code>typical</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>ci.lvl</code></td>
+<td>
+<p>Numeric, the level of the confidence intervals. For <code>ggpredict()</code>,
+use <code>ci.lvl = NA</code>, if confidence intervals should not be calculated
+(for instance, due to computation time). Typically, confidence intervals
+based on the standard errors as returned by the <code>predict()</code> function
+are returned, assuming normal distribution (i.e. <code>+/- 1.96 * SE</code>).
+See introduction of <a href="https://strengejacke.github.io/ggeffects/articles/ggeffects.html">this vignette</a>
+for more details.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>For <code>ggpredict()</code>, further arguments passed down to
+<code>predict()</code>; for <code>ggeffect()</code>, further arguments passed
+down to <code><a href="../../effects/html/Effect.html">Effect</a></code>; and for <code>ggemmeans()</code>,
+further arguments passed down to <code><a href="../../emmeans/html/emmeans.html">emmeans</a></code>.
+If <code>type = "sim"</code>, <code>...</code> may also be used to set the number of
+simulation, e.g. <code>nsim = 500</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+<p>Character, only applies for survival models, mixed effects models
+and/or models with zero-inflation. <strong>Note:</strong> For <code>brmsfit</code>-models
+with zero-inflation component, there is no <code>type = "fe.zi"</code> nor
+<code>type = "re.zi"</code>; predicted values for <code>MixMod</code>-models from
+<span class="pkg">GLMMadaptive</span> with zero-inflation component <em>always</em> condition on
+the zero-inflation part of the model (see 'Details').
+</p>
+
+<dl>
+<dt><code>"fe"</code></dt><dd>
+<p>Predicted values are conditioned on the fixed effects or conditional
+model only (for mixed models: predicted values are on the population-level
+and <em>confidence intervals</em> are returned). For instance, for models
+fitted with <code>zeroinfl</code> from <span class="pkg">pscl</span>, this would return the
+predicted mean from the count component (without zero-inflation).
+For models with zero-inflation component, this type calls
+<code>predict(..., type = "link")</code> (however, predicted values are
+back-transformed to the response scale).
+</p>
+</dd>
+<dt><code>"re"</code></dt><dd>
+<p>This only applies to mixed models, and <code>type = "re"</code> does not
+condition on the zero-inflation component of the model. <code>type = "re"</code>
+still returns population-level predictions, however, unlike <code>type = "fe"</code>,
+intervals also consider the uncertainty in the variance parameters (the
+mean random effect variance, see <cite>Johnson et al. 2014</cite> for details)
+and hence can be considered as <em>prediction intervals</em>. For models
+with zero-inflation component, this type calls
+<code>predict(..., type = "link")</code> (however, predicted values are
+back-transformed to the response scale).
+<br /> <br />
+To get predicted values for each level of the random effects groups, add the
+name of the related random effect term to the <code>terms</code>-argument
+(for more details, see <a href="https://strengejacke.github.io/ggeffects/articles/introduction_effectsatvalues.html">this vignette</a>).
+</p>
+</dd>
+<dt><code>"fe.zi"</code></dt><dd>
+<p>Predicted values are conditioned on the fixed effects and the zero-inflation
+component. For instance, for models fitted with <code>zeroinfl</code>
+from <span class="pkg">pscl</span>, this would return the predicted response (<code>mu*(1-p)</code>)
+and for <span class="pkg">glmmTMB</span>, this would return the expected value <code>mu*(1-p)</code>
+<em>without</em> conditioning on random effects (i.e. random effect variances
+are not taken into account for the confidence intervals). For models with
+zero-inflation component, this type calls <code>predict(..., type = "response")</code>.
+See 'Details'.
+</p>
+</dd>
+<dt><code>"re.zi"</code></dt><dd>
+<p>Predicted values are conditioned on the zero-inflation component and
+take the random effects uncertainty into account. For models fitted with
+<code>glmmTMB()</code>, <code>hurdle()</code> or <code>zeroinfl()</code>, this would return the
+expected value <code>mu*(1-p)</code>. For <span class="pkg">glmmTMB</span>, prediction intervals
+also consider the uncertainty in the random effects variances. This
+type calls <code>predict(..., type = "response")</code>. See 'Details'.
+</p>
+</dd>
+<dt><code>"sim"</code></dt><dd>
+<p>Predicted values and confidence resp. prediction intervals are
+based on simulations, i.e. calls to <code>simulate()</code>. This type
+of prediction takes all model uncertainty into account, including
+random effects variances. Currently supported models are <code>glmmTMB</code>
+and <code>merMod</code>. See <code>...</code> for details on number of simulations.
+</p>
+</dd>
+<dt><code>"surv"</code> and <code>"cumhaz"</code></dt><dd>
+<p>Applies only to <code>coxph</code>-objects from the <span class="pkg">survial</span>-package and
+calculates the survival probability or the cumulative hazard of an event.
+</p>
+</dd>
+</dl>
+</td></tr>
+<tr valign="top"><td><code>typical</code></td>
+<td>
+<p>Character vector, naming the function to be applied to the
+covariates over which the effect is &quot;averaged&quot;. The default is &quot;mean&quot;.
+See <code><a href="../../sjmisc/html/typical_value.html">typical_value</a></code> for options.</p>
+</td></tr>
+<tr valign="top"><td><code>condition</code></td>
+<td>
+<p>Named character vector, which indicates covariates that
+should be held constant at specific values. Unlike <code>typical</code>, which
+applies a function to the covariates to determine the value that is used
+to hold these covariates constant, <code>condition</code> can be used to define
+exact values, for instance <code>condition = c(covariate1 = 20, covariate2 = 5)</code>.
+See 'Examples'.</p>
+</td></tr>
+<tr valign="top"><td><code>back.transform</code></td>
+<td>
+<p>Logical, if <code>TRUE</code> (the default), predicted values
+for log- or log-log transformend responses will be back-transformed to
+original response-scale.</p>
+</td></tr>
+<tr valign="top"><td><code>ppd</code></td>
+<td>
+<p>Logical, if <code>TRUE</code>, predictions for Stan-models are
+based on the posterior predictive distribution
+(<code><a href="../../rstantools/html/posterior_predict.html">posterior_predict</a></code>). If <code>FALSE</code> (the
+default), predictions are based on posterior draws of the linear
+predictor (<code><a href="../../rstantools/html/posterior_linpred.html">posterior_linpred</a></code>).</p>
+</td></tr>
+<tr valign="top"><td><code>vcov.fun</code></td>
+<td>
+<p>String, indicating the name of the <code>vcov*()</code>-function
+from the <span class="pkg">sandwich</span> or <span class="pkg">clubSandwich</span>-package, e.g.
+<code>vcov.fun = "vcovCL"</code>, which is used to compute (cluster) robust
+standard errors for predictions. If <code>NULL</code>, standard errors (and
+confidence intervals) for predictions are based on the standard errors as
+returned by the <code>predict()</code>-function. <strong>Note</strong> that probably not
+all model objects that work with <code>ggpredict()</code> are also supported
+by the <span class="pkg">sandwich</span> or <span class="pkg">clubSandwich</span>-package.</p>
+</td></tr>
+<tr valign="top"><td><code>vcov.type</code></td>
+<td>
+<p>Character vector, specifying the estimation type for the
+robust covariance matrix estimation (see <code><a href="../../sandwich/html/vcovHC.html">vcovHC</a></code>
+or <code><a href="../../clubSandwich/html/vcovCR.html">vcovCR</a></code> for details).</p>
+</td></tr>
+<tr valign="top"><td><code>vcov.args</code></td>
+<td>
+<p>List of named vectors, used as additional arguments that
+are passed down to <code>vcov.fun</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>interval</code></td>
+<td>
+<p>Type of interval calculation, can either be <code>"confidence"</code>
+(default) or <code>"prediction"</code>. May be abbreviated. Unlike
+<em>confidence intervals</em>, <em>prediction intervals</em> include the
+residual variance (sigma^2). This argument is ignored for mixed models,
+as <code>interval = "prediction"</code> is equivalent to <code>type = "re"</code>
+(and <code>interval = "confidence"</code> is equivalent to <code>type = "fe"</code>).
+Note that prediction intervals are not available for all models.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+
+
+<h4>Supported Models</h4>
+
+<p>A list of supported models can be found at <a href="https://github.com/strengejacke/ggeffects">https://github.com/strengejacke/ggeffects</a>.
+Support for models varies by function, i.e. although <code>ggpredict()</code>,
+<code>ggemmeans()</code> and <code>ggeffect()</code> support most models, some models
+are only supported exclusively by one of the three functions.
+</p>
+
+
+
+<h4>Difference between <code>ggpredict()</code> and <code>ggeffect()</code> or <code>ggemmeans()</code></h4>
+
+<p><code>ggpredict()</code> calls <code>predict()</code>, while <code>ggeffect()</code>
+calls <code><a href="../../effects/html/Effect.html">Effect</a></code> and <code>ggemmeans()</code> calls
+<code><a href="../../emmeans/html/emmeans.html">emmeans</a></code> to compute marginal effects. Therefore,
+<code>ggpredict()</code> and <code>ggeffect()</code> resp. <code>ggemmeans()</code> differ in
+how factors are held constant: <code>ggpredict()</code> uses the reference level, while
+<code>ggeffect()</code> and <code>ggemmeans()</code> compute a kind of &quot;average&quot; value,
+which represents the proportions of each factor's category. Use <code>condition</code>
+to set a specific level for factors in <code>ggemmeans()</code>, so factors are
+not averaged over their categories, but held constant at a given level.
+</p>
+
+
+
+<h4>Marginal Effects at Specific Values</h4>
+
+<p>Specific values of model terms can be specified via the <code>terms</code>-argument.
+Indicating levels in square brackets allows for selecting only
+specific groups or values resp. value ranges. Term name and the start of
+the levels in brackets must be separated by a whitespace character, e.g.
+<code>terms = c("age", "education [1,3]")</code>. Numeric ranges, separated
+with colon, are also allowed: <code>terms = c("education", "age [30:60]")</code>.
+<br /> <br />
+The <code>terms</code>-argument also supports the same shortcuts as the
+<code>values</code>-argument in <code>values_at()</code>. So
+<code>terms = "age [meansd]"</code> would return predictions for the values
+one standard deviation below the mean age, the mean age and
+one SD above the mean age. <code>terms = "age [quart2]"</code> would calculate
+predictions at the value of the lower, median and upper quartile of age.
+<br /> <br />
+Furthermore, it is possible to specify a function name. Values for
+predictions will then be transformed, e.g. <code>terms = "income [exp]"</code>.
+This is useful when model predictors were transformed for fitting the
+model and should be back-transformed to the original scale for predictions.
+It is also possible to define own functions (see
+<a href="https://strengejacke.github.io/ggeffects/articles/introduction_effectsatvalues.html">this vignette</a>).
+<br /> <br />
+You can take a random sample of any size with <code>sample=n</code>, e.g
+<code>terms = "income [sample=8]"</code>, which will sample eight values from
+all possible values of the variable <code>income</code>. This option is especially
+useful for plotting marginal effects at certain levels of random effects
+group levels, where the group factor has many levels that can be completely
+plotted. For more details, see <a href="https://strengejacke.github.io/ggeffects/articles/introduction_effectsatvalues.html">this vignette</a>.
+<br /> <br />
+Finally, numeric vectors for which no specific values are given, a
+&quot;pretty range&quot; is calculated (see <code><a href="pretty_range.html">pretty_range</a></code>), to avoid
+memory allocation problems for vectors with many unique values. If a numeric
+vector is specified as second or third term (i.e. if this vector represents
+a grouping structure), representative values (see <code><a href="values_at.html">values_at</a></code>)
+are chosen (unless other values are specified). If all values for a numeric
+vector should be used to compute predictions, you may use e.g.
+<code>terms = "age [all]"</code>. See also package vignettes.
+<br /> <br />
+To create a pretty range that should be smaller or larger than the default
+range (i.e. if no specific values would be given), use the <code>n</code>-tag,
+e.g. <code>terms="age [n=5]"</code> or <code>terms="age [n=12]"</code>. Larger
+values for <code>n</code> return a larger range of predicted values.
+</p>
+
+
+
+<h4>Holding covariates at constant values</h4>
+
+<p>For <code>ggpredict()</code>, <code>expand.grid()</code> is called on all unique
+combinations of <code>model.frame(model)[, terms]</code> and used as
+<code>newdata</code>-argument for <code>predict()</code>. In this case,
+all remaining covariates that are not specified in <code>terms</code> are
+held constant: Numeric values are set to the mean (unless changed with
+the <code>condition</code> or <code>typical</code>-argument), factors are set to their
+reference level (may also be changed with <code>condition</code>) and character
+vectors to their mode (most common element).
+<br /> <br />
+<code>ggeffect()</code> and <code>ggemmeans()</code>, by default, set remaining numeric
+covariates to their mean value, while for factors, a kind of &quot;average&quot; value,
+which represents the proportions of each factor's category, is used. For
+<code>ggemmeans()</code>, use <code>condition</code> to set a specific level for
+factors so that these are not averaged over their categories, but held
+constant at the given level.
+</p>
+
+
+
+<h4>Bayesian Regression Models</h4>
+
+<p><code>ggpredict()</code> also works with <strong>Stan</strong>-models from
+the <a href="https://CRAN.R-project.org/package=rstanarm"><span class="pkg">rstanarm</span></a> or <a href="https://CRAN.R-project.org/package=brms"><span class="pkg">brms</span></a>-package. The predicted
+values are the median value of all drawn posterior samples. The
+confidence intervals for Stan-models are Bayesian predictive intervals.
+By default (i.e. <code>ppd = FALSE</code>), the predictions are based on
+<code><a href="../../rstantools/html/posterior_linpred.html">posterior_linpred</a></code> and hence have some
+limitations: the uncertainty of the error term is not taken into
+account. The recommendation is to use the posterior predictive
+distribution (<code><a href="../../rstantools/html/posterior_predict.html">posterior_predict</a></code>).
+</p>
+
+
+
+<h4>Zero-Inflated and Zero-Inflated Mixed Models with brms</h4>
+
+<p>Models of class <code>brmsfit</code> always condition on the zero-inflation
+component, if the model has such a component. Hence, there is no
+<code>type = "fe.zi"</code> nor <code>type = "re.zi"</code> for <code>brmsfit</code>-models,
+because predictions are based on draws of the posterior distribution,
+which already account for the zero-inflation part of the model.
+</p>
+
+
+
+<h4>Zero-Inflated and Zero-Inflated Mixed Models with glmmTMB</h4>
+
+<p>If <code>model</code> is of class <code>glmmTMB</code>, <code>hurdle</code>, <code>zeroinfl</code>
+or <code>zerotrunc</code>, simulations from a multivariate normal distribution
+(see <code><a href="../../MASS/html/mvrnorm.html">mvrnorm</a></code>) are drawn to calculate <code>mu*(1-p)</code>.
+Confidence intervals are then based on quantiles of these results. For
+<code>type = "re.zi"</code>, prediction intervals also take the uncertainty in
+the random-effect paramters into account (see also Brooks et al. 2017,
+pp.391-392 for details).
+<br /> <br />
+An alternative for models fitted with <span class="pkg">glmmTMB</span> that take all model
+uncertainties into account are simulations based on <code>simulate()</code>, which
+is used when <code>type = "sim"</code> (see Brooks et al. 2017, pp.392-393 for
+details).
+</p>
+
+
+
+<h4>MixMod-models from GLMMadaptive</h4>
+
+<p>Predicted values for the fixed effects component (<code>type = "fe"</code> or
+<code>type = "fe.zi"</code>) are based on <code>predict(..., type = "mean_subject")</code>,
+while predicted values for random effects components (<code>type = "re"</code> or
+<code>type = "re.zi"</code>) are calculated with <code>predict(..., type = "subject_specific")</code>
+(see <code>?GLMMadaptive::predict.MixMod</code> for details). The latter option
+requires the response variable to be defined in the <code>newdata</code>-argument
+of <code>predict()</code>, which will be set to its typical value (see
+<code><a href="../../sjmisc/html/typical_value.html">typical_value</a></code>).
+</p>
+
+
+
+<h3>Value</h3>
+
+<p>A data frame (with <code>ggeffects</code> class attribute) with consistent
+data columns:
+</p>
+
+<dl>
+<dt><code>x</code></dt><dd><p>the values of the first term in <code>terms</code>, used as x-position in plots.</p>
+</dd>
+<dt><code>predicted</code></dt><dd><p>the predicted values of the response, used as y-position in plots.</p>
+</dd>
+<dt><code>std.error</code></dt><dd><p>the standard error of the predictions.</p>
+</dd>
+<dt><code>conf.low</code></dt><dd><p>the lower bound of the confidence interval for the predicted values.</p>
+</dd>
+<dt><code>conf.high</code></dt><dd><p>the upper bound of the confidence interval for the predicted values.</p>
+</dd>
+<dt><code>group</code></dt><dd><p>the grouping level from the second term in <code>terms</code>, used as grouping-aesthetics in plots.</p>
+</dd>
+<dt><code>facet</code></dt><dd><p>the grouping level from the third term in <code>terms</code>, used to indicate facets in plots.</p>
+</dd>
+</dl>
+
+<p>The estimated marginal means (predicted values) are always on the
+response scale! <br /> <br />
+For proportional odds logistic regression (see <code><a href="../../MASS/html/polr.html">polr</a></code>)
+resp. cumulative link models (e.g., see <code><a href="../../ordinal/html/clm.html">clm</a></code>),
+an additional column <code>response.level</code> is returned, which indicates
+the grouping of predictions based on the level of the model's response.
+<br /> <br /> Note that for convenience reasons, the columns for the intervals
+are always named <code>conf.low</code> and <code>conf.high</code>, even though
+for Bayesian models credible or highest posterior density intervals
+are returned.
+</p>
+
+
+<h3>Note</h3>
+
+
+
+<h4>Multinomial Models</h4>
+
+<p><code>polr</code>-, <code>clm</code>-models, or more generally speaking, models with
+ordinal or multinominal outcomes, have an additional column
+<code>response.level</code>, which indicates with which level of the response
+variable the predicted values are associated.
+</p>
+
+
+
+<h4>Printing Results</h4>
+
+<p>The <code>print()</code>-method gives a clean output (especially for predictions
+by groups), and indicates at which values covariates were held constant.
+Furthermore, the <code>print()</code>-method has the arguments <code>digits</code> and
+<code>n</code> to control number of decimals and lines to be printed, and an
+argument <code>x.lab</code> to print factor-levels instead of numeric values
+if <code>x</code> is a factor.
+</p>
+
+
+
+<h4>Limitations</h4>
+
+<p>The support for some models, for example from package <span class="pkg">MCMCglmm</span>, is
+rather experimental and may fail for certain models. If you encounter
+any errors, please file an issue at <a href="https://github.com/strengejacke/ggeffects/issues">https://github.com/strengejacke/ggeffects/issues</a>.
+</p>
+
+
+
+<h3>References</h3>
+
+
+<ul>
+<li><p> Brooks ME, Kristensen K, Benthem KJ van, Magnusson A, Berg CW, Nielsen A, et al. glmmTMB Balances Speed and Flexibility Among Packages for Zero-inflated Generalized Linear Mixed Modeling. The R Journal. 2017;9: 378-400.
+</p>
+</li>
+<li><p> Johnson PC, O'Hara RB. 2014. Extension of Nakagawa &amp; Schielzeth's R2GLMM to random slopes models. Methods Ecol Evol, 5: 944-946. (doi: <a href="https://doi.org/10.1111/2041-210X.12225">10.1111/2041-210X.12225</a>)
+</p>
+</li></ul>
+
+
+
+<h3>Examples</h3>
+
+<pre>
+library(sjlabelled)
+data(efc)
+fit &lt;- lm(barthtot ~ c12hour + neg_c_7 + c161sex + c172code, data = efc)
+
+ggpredict(fit, terms = "c12hour")
+ggpredict(fit, terms = c("c12hour", "c172code"))
+ggpredict(fit, terms = c("c12hour", "c172code", "c161sex"))
+
+# specified as formula
+ggpredict(fit, terms = ~ c12hour + c172code + c161sex)
+
+# only range of 40 to 60 for variable 'c12hour'
+ggpredict(fit, terms = "c12hour [40:60]")
+
+# using "summary()" shows that covariate "neg_c_7" is held
+# constant at a value of 11.84 (its mean value). To use a
+# different value, use "condition"
+ggpredict(fit, terms = "c12hour [40:60]", condition = c(neg_c_7 = 20))
+
+# to plot ggeffects-objects, you can use the 'plot()'-function.
+# the following examples show how to build your ggplot by hand.
+
+
+# plot predicted values, remaining covariates held constant
+library(ggplot2)
+mydf &lt;- ggpredict(fit, terms = "c12hour")
+ggplot(mydf, aes(x, predicted)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = .1)
+
+# three variables, so we can use facets and groups
+mydf &lt;- ggpredict(fit, terms = c("c12hour", "c161sex", "c172code"))
+ggplot(mydf, aes(x = x, y = predicted, colour = group)) +
+  stat_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~facet, ncol = 2)
+
+# select specific levels for grouping terms
+mydf &lt;- ggpredict(fit, terms = c("c12hour", "c172code [1,3]", "c161sex"))
+ggplot(mydf, aes(x = x, y = predicted, colour = group)) +
+  stat_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~facet) +
+  labs(
+    y = get_y_title(mydf),
+    x = get_x_title(mydf),
+    colour = get_legend_title(mydf)
+  )
+
+# level indication also works for factors with non-numeric levels
+# and in combination with numeric levels for other variables
+data(efc)
+efc$c172code &lt;- as_label(efc$c172code)
+fit &lt;- lm(barthtot ~ c12hour + neg_c_7 + c161sex + c172code, data = efc)
+ggpredict(fit, terms = c("c12hour",
+  "c172code [low level of education, high level of education]",
+  "c161sex [1]"))
+
+# use categorical value on x-axis, use axis-labels, add error bars
+dat &lt;- ggpredict(fit, terms = c("c172code", "c161sex"))
+ggplot(dat, aes(x, predicted, colour = group)) +
+  geom_point(position = position_dodge(.1)) +
+  geom_errorbar(
+    aes(ymin = conf.low, ymax = conf.high),
+    position = position_dodge(.1)
+  ) +
+  scale_x_discrete(breaks = 1:3, labels = get_x_labels(dat))
+
+# 3-way-interaction with 2 continuous variables
+data(efc)
+# make categorical
+efc$c161sex &lt;- as_factor(efc$c161sex)
+fit &lt;- lm(neg_c_7 ~ c12hour * barthtot * c161sex, data = efc)
+# select only levels 30, 50 and 70 from continuous variable Barthel-Index
+dat &lt;- ggpredict(fit, terms = c("c12hour", "barthtot [30,50,70]", "c161sex"))
+ggplot(dat, aes(x = x, y = predicted, colour = group)) +
+  stat_smooth(method = "lm", se = FALSE, fullrange = TRUE) +
+  facet_wrap(~facet) +
+  labs(
+    colour = get_legend_title(dat),
+    x = get_x_title(dat),
+    y = get_y_title(dat),
+    title = get_title(dat)
+  )
+
+# or with ggeffects' plot-method
+plot(dat, ci = FALSE)
+
+# marginal effects for polynomial terms
+data(efc)
+fit &lt;- glm(
+  tot_sc_e ~ c12hour + e42dep + e17age + I(e17age^2) + I(e17age^3),
+  data = efc,
+  family = poisson()
+)
+ggeffect(fit, terms = "e17age")
+
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>ggeffects</em> version 0.14.1 <a href="00Index.html">Index</a>]</div>
+</body></html>
