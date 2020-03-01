@@ -23,7 +23,8 @@ realProjection <- TRUE  # Unused
 useOldMethod <- FALSE  
 
 # -- Dev   Comment/uncomment with ctrl-shift-c
-#userInputFile <- "C:/Users/Cornholio/Desktop/MyData/sites_tristate-upstate_NoDir.csv"
+#userInputFile <- "C:/Users/Cornholio/Desktop/hold/sites_tristate-upstate_trimmed.csv"
+#userInputFile <- "C:/Users/Cornholio/Desktop/FOSSFlood-master/AOI/66044_66046_66047_66045_66049/geo/addresses/OSMaddresses.shp"
 #LATFieldName <- "Latitude.Decimal"
 #LONFieldName <- "Longitude.Decimal"
 #CRSFieldName <- 4326
@@ -156,7 +157,7 @@ if(file_ext(userInputFile)[2]=="csv") {
   coordinates(userPoints) <- eval(parse(text=as.character(paste0('~',LONFieldName,"+",LATFieldName))))
   CRSString <- paste0("+init=epsg:",CRSFieldName)
   proj4string(userPoints) <- CRS(CRSString)
-} else if(file_ext(userInputFile)=="shp") {
+} else if(file_ext(userInputFile)[2]=="shp") {
   userPoints  <- readOGR(userInputFile)
 } else {
   print("Unrecognized file extention -- valid files are csv shp")
@@ -203,7 +204,10 @@ launch.browser = function(appUrl, browser.path=browser.chromeium) {
 
 shinyApp(
   ui = dashboardPage(
-    dashboardHeader(title = "clusteR - V 0.8"),
+    dashboardHeader(title = "clusteR - V 0.82", 
+                    tags$li(class = "dropdown",
+                            actionButton("print", "Print/Save")
+                    )),
     dashboardSidebar(disable = TRUE),
     dashboardBody(
       useShinyalert(),
@@ -222,14 +226,13 @@ shinyApp(
           id = "tabset1",
           width = 12,
           tabPanel("Data Table", 
-                   fluidRow(DT::dataTableOutput("DataTableForm")),
-                   fluidRow( 
-                     actionButton(inputId = "save_edits",label = "Save"),
-                     tags$head(tags$style(".butt{background-color:#230682;} .butt{color: #e6ebef;}")),
-                     downloadButton("Download_csv", "Download in CSV", class="butt"),
-                     shinyjs::useShinyjs(),
-                     shinyjs::extendShinyjs(text = "shinyjs.refresh = function() { location.reload(); }")
-                   )
+                   DT::dataTableOutput("DataTableForm"),
+                   actionButton(inputId = "save_edits",label = "Save"),
+                   tags$head(tags$style(".butt{background-color:#230682;} .butt{color: #e6ebef;}")),
+                   downloadButton("Download_csv", "Download in CSV", class="butt"),
+                   shinyjs::useShinyjs(),
+                   shinyjs::extendShinyjs(text = "shinyjs.refresh = function() { location.reload(); }")
+                   
           ),
           tabPanel("ClusteR", DT::dataTableOutput("DataTableSummery"))
         )
@@ -238,11 +241,19 @@ shinyApp(
   ),
   server = function(input, output, session) {
     ### interactive dataset 
-    dataInstance<-reactiveValues()
-    dataInstance$Data<-readRDS("workingdata.rds")
+    dataInstance <- reactiveValues()
+    dataInstance$Data <- readRDS("workingdata.rds")
+    dataInstance$Map <- leaflet() %>%
+      addProviderTiles(providers$Stamen.TonerLite, group = "TonerLite") %>%
+      addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
+      addProviderTiles(providers$OpenTopoMap, group = "OpenTopo") %>%
+      addLayersControl(
+        baseGroups = c("TonerLite", "Toner", "OpenTopo"),
+        options = layersControlOptions(collapsed = FALSE)
+      )
     
     output$DataTableForm<-DT::renderDataTable({
-      datatable(as.data.frame(dataInstance$Data), editable = TRUE, selection = "none") 
+      datatable(as.data.frame(dataInstance$Data), editable = TRUE, class = 'compact hover stripe order-column row-border stripe', options = list(scrollX = TRUE), selection = "single") 
     })
     proxy = dataTableProxy('DataTableForm')
     observeEvent(input$DataTableForm_cell_edit, {
@@ -254,42 +265,44 @@ shinyApp(
       dataInstance$Data[i, j] <<- DT::coerceValue(v, dataInstance$Data[i, j]) 
       replaceData(proxy, dataInstance$Data, resetPaging = FALSE) # important
     })
-    observeEvent(input$save_edits,{
+    observeEvent(input$save_edits, {
       saveRDS(dataInstance$Data, "workingdata.rds")
       shinyalert(title = "Saved!", type = "success")
     })
-    output$Download_csv<- downloadHandler(
+    output$Download_csv <- downloadHandler(
       filename = function() {paste("clusteR_edits", Sys.Date(), ".csv", sep="")},
       content = function(file) {write.csv(data.frame(dataInstance$Data), file, row.names = F)}
     )
+    output$DataTableSummery <- DT::renderDataTable({
+      datatable(as.data.frame(table(subset(as.data.frame(dataInstance$Data),select=input$variabledisplay),dnn=input$variabledisplay)), class = 'compact hover stripe order-column row-border stripe') 
+    })
+    
     colorpal <- reactive({
       colorFactor(palette = distinctColorPalette(k = length(unique(dataInstance$Data[[input$variabledisplay]])), altCol = FALSE, runTsne = FALSE), 
                   levels = unique(dataInstance$Data[[input$variabledisplay]]))
     })
     output$map <- renderLeaflet({
-      leaflet() %>%
-        addProviderTiles(providers$Stamen.TonerLite, group = "TonerLite") %>%
-        addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
-        addProviderTiles(providers$OpenTopoMap, group = "OpenTopo") %>%
-        addLayersControl(
-          baseGroups = c("TonerLite", "Toner", "OpenTopo"),
-          options = layersControlOptions(collapsed = FALSE)
-        )
+      dataInstance$Map
     })
     observe({
-      proxy <- leafletProxy("map", data = dataInstance$Data)
+      proxy <- leafletProxy("map")
       proxy %>% 
         clearGroup(group = "Points") %>% 
         clearControls()
       pal <- colorpal()
-      proxy %>% addLegend(title = "Legend", position = "bottomright", pal = pal, values = ~dataInstance$Data[[input$variabledisplay]])
+      proxy %>% 
+        addLegend(title = "Legend", 
+                  position = "bottomright", 
+                  pal = pal, 
+                  values = dataInstance$Data[[input$variabledisplay]]
+        )
     })    
     observe({
       pal <- colorpal()
-      leafletProxy("map", data = dataInstance$Data) %>%
-        addCircleMarkers(data=dataInstance$Data, 
-                         color = ~pal(dataInstance$Data[[input$variabledisplay]]), 
-                         label = ~dataInstance$Data[[input$variablelabel]],
+      leafletProxy("map") %>%
+        addCircleMarkers(data= dataInstance$Data, 
+                         color = pal(dataInstance$Data[[input$variabledisplay]]), 
+                         label = dataInstance$Data[[input$variablelabel]],
                          stroke = FALSE,
                          radius = 6,
                          fillOpacity = 0.9,
@@ -300,13 +313,14 @@ shinyApp(
           options = layersControlOptions(collapsed = FALSE)
         )
     })
-    output$DataTableSummery<-DT::renderDataTable({
-      datatable(as.data.frame(table(subset(as.data.frame(dataInstance$Data),select=input$variabledisplay),dnn=input$variabledisplay))) 
+    observe({
+      if (length(input$DataTableForm_rows_selected)) {
+        leafletProxy("map") %>%
+          flyTo(coordinates(dataInstance$Data[input$DataTableForm_rows_selected,])[1],coordinates(dataInstance$Data[input$DataTableForm_rows_selected,])[2],18)
+      }
     })
-
+    
     session$onSessionEnded(stopApp)
   },
   options = list(launch.browser=launch.browser)
 )
-
-

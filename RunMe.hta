@@ -81,6 +81,7 @@ end sub
 <script type="text/vbscript" id="ExecuteclusteR">
 ' <!--
 Sub ExecuteclusteR()
+	Const Q = """"
 	iTimerID = window.setInterval("LOGRefresh()",5000)
 	Const ForReading = 1
 	Const ForWriting = 2
@@ -133,7 +134,7 @@ Sub ExecuteclusteR()
 		errResult = objFile.Rename(strNewName)
 	Next
 	dim shinyRAPPPath
-	shinyRAPPPath = sCurPath & "\shiny\global.r"
+	shinyRAPPPath = Q & sCurPath & "\shiny\global.r" & Q
 	Rexe           = "R-Portable\App\R-Portable\bin\Rscript.exe"
 	Ropts          = "--no-save --no-environ --no-init-file --no-restore --no-Rconsole"
 	RScriptFile    = shinyRAPPPath

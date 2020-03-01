@@ -11,7 +11,7 @@ basedir <- getwd()
 # Rplace code below with desired inputs.
 
 # -- USER Inputs -------------------------------------------------------------------------
-userInputFile <- "C:/Users/Cornholio/Desktop/MyData/sites_tristate-upstate_NoDir.csv"
+userInputFile <- "C:/Users/Cornholio/Desktop/FOSSFlood-master/AOI/66044_66046_66047_66045_66049/geo/addresses/OSMaddresses.shp"
 LATFieldName <- "Latitude.Decimal"
 LONFieldName <- "Longitude.Decimal"
 CRSFieldName <- "4326"
@@ -23,7 +23,8 @@ realProjection <- TRUE  # Unused
 useOldMethod <- FALSE  
 
 # -- Dev   Comment/uncomment with ctrl-shift-c
-#userInputFile <- "C:/Users/Cornholio/Desktop/MyData/sites_tristate-upstate_NoDir.csv"
+#userInputFile <- "C:/Users/Cornholio/Desktop/hold/sites_tristate-upstate_trimmed.csv"
+#userInputFile <- "C:/Users/Cornholio/Desktop/FOSSFlood-master/AOI/66044_66046_66047_66045_66049/geo/addresses/OSMaddresses.shp"
 #LATFieldName <- "Latitude.Decimal"
 #LONFieldName <- "Longitude.Decimal"
 #CRSFieldName <- 4326
@@ -156,7 +157,7 @@ if(file_ext(userInputFile)[2]=="csv") {
   coordinates(userPoints) <- eval(parse(text=as.character(paste0('~',LONFieldName,"+",LATFieldName))))
   CRSString <- paste0("+init=epsg:",CRSFieldName)
   proj4string(userPoints) <- CRS(CRSString)
-} else if(file_ext(userInputFile)=="shp") {
+} else if(file_ext(userInputFile)[2]=="shp") {
   userPoints  <- readOGR(userInputFile)
 } else {
   print("Unrecognized file extention -- valid files are csv shp")
@@ -303,11 +304,8 @@ shinyApp(
     output$DataTableSummery<-DT::renderDataTable({
       datatable(as.data.frame(table(subset(as.data.frame(dataInstance$Data),select=input$variabledisplay),dnn=input$variabledisplay))) 
     })
-
+    
     session$onSessionEnded(stopApp)
   },
   options = list(launch.browser=launch.browser)
 )
-
-
-
