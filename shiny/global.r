@@ -11,7 +11,7 @@ basedir <- getwd()
 # Rplace code below with desired inputs.
 
 # -- USER Inputs -------------------------------------------------------------------------
-userInputFile <- "C:/Users/Cornholio/Desktop/FOSSFlood-master/AOI/66044_66046_66047_66045_66049/geo/addresses/OSMaddresses.shp"
+userInputFile <- "C:/Users/Cornholio/Desktop/hold/sites_tristate-upstate_small.csv"
 LATFieldName <- "Latitude.Decimal"
 LONFieldName <- "Longitude.Decimal"
 CRSFieldName <- "4326"
@@ -23,6 +23,7 @@ realProjection <- TRUE  # Unused
 useOldMethod <- FALSE  
 
 # -- Dev   Comment/uncomment with ctrl-shift-c
+#userInputFile <- "C:/Users/Cornholio/Desktop/hold/sites_tristate-upstate_small.csv"
 #userInputFile <- "C:/Users/Cornholio/Desktop/hold/sites_tristate-upstate_trimmed.csv"
 #userInputFile <- "C:/Users/Cornholio/Desktop/FOSSFlood-master/AOI/66044_66046_66047_66045_66049/geo/addresses/OSMaddresses.shp"
 #LATFieldName <- "Latitude.Decimal"
@@ -49,7 +50,6 @@ print("-- Welcome to clusteR - Pre-Preloading constants --")
 # install.packages('dismo')
 # install.packages('ggplot2')
 # install.packages('ncdf4')
-## install.packages('FedData')
 # install.packages('ggmap')
 # install.packages('curl')
 # install.packages('RCurl')
@@ -88,7 +88,15 @@ print("-- Welcome to clusteR - Pre-Preloading constants --")
 # install.packages("editData")
 # install.packages("randomcoloR")
 # install.packages('shinyjs')
-# install.packages('shinyalert')
+# install.packages('shinyalert') 
+# install.packages('grid')
+# install.packages('gridExtra')
+# install.packages("purrr")
+# install.packages("magick")
+# install.packages("animation")
+# install.packages("mapview")
+# install.packages("imager")
+
 suppressMessages(library(dismo))
 suppressMessages(library(ggplot2))
 suppressMessages(library(ncdf4))
@@ -125,11 +133,11 @@ suppressMessages(library(geosphere))
 suppressMessages(library(magrittr))
 suppressMessages(library(editData))
 suppressMessages(library(randomcoloR))
-suppressMessages(library(ggplot2))
 suppressMessages(library(tidyverse))
 suppressMessages(library(sp))
 suppressMessages(library(htmlwidgets))
 suppressMessages(library(htmltools))
+suppressMessages(library(webshot))
 suppressMessages(library(plotly))
 suppressMessages(library(mapedit))
 suppressMessages(library(leafpop))
@@ -138,7 +146,22 @@ suppressMessages(library(shinydashboard))
 suppressMessages(library(shinyjs))
 suppressMessages(library(lubridate))
 suppressMessages(library(shinyalert))
+#suppressMessages(library(knitr))
+#suppressMessages(library(rmarkdown))
+suppressMessages(library(purrr))
+suppressMessages(library(gtable))
+suppressMessages(library(ggplot2))
+suppressMessages(library(gridExtra))
+suppressMessages(library(grid))
+suppressMessages(library(magick))
+suppressMessages(library(animation))
+suppressMessages(library(mapview))
+suppressMessages(library(imager))
+
 useShinyalert()
+# if(webshot:::find_phantom()==NULL) {
+#   webshot::install_phantomjs()
+# }
 
 file_ext <- function(f_name) {
   f_name %>%
@@ -175,23 +198,6 @@ values <-first(row.names(sorted))
 uniqeValuecount <- first(sorted) 
 
 browser.chromeium = file.path(paste0(basedir, '/ChromiumPortable/App/Chromium/64/chrome.exe'))
-#browser.chrome = file.path(paste0(basedir, '/GoogleChromePortable/App/Chrome-bin/chrome.exe'))
-#browser.firefox = file.path(paste0(basedir, '/FirefoxPortable/App/Firefox64/firefox.exe'))
-
-# launch.browser = function(appUrl, browser.path=browser.chrome) {
-#   shell(sprintf('"%s" --app=%s', browser.path, appUrl))
-# }
-
-# launch.browser = function(appUrl, browser.path=browser.chrome) {
-#   system(sprintf('"%s" --disable-gpu --app="data:text/html,<html>
-#                  <head>
-#                  <title>System Configuration</title>
-#                  </head>
-#                  <body>
-#                  <script>window.resizeTo(830,675);window.location=\'%s\';</script>
-#                  </body></html>" &', browser.path, appUrl))
-# }
-
 launch.browser = function(appUrl, browser.path=browser.chromeium) {
   system(sprintf('"%s" --disable-gpu --app="data:text/html,<html>
                  <head>
@@ -204,7 +210,10 @@ launch.browser = function(appUrl, browser.path=browser.chromeium) {
 
 shinyApp(
   ui = dashboardPage(
-    dashboardHeader(title = "clusteR - V 0.8"),
+    dashboardHeader(title = "clusteR - V 0.82", 
+                    tags$li(class = "dropdown",
+                            actionButton("print", "Export analysis")
+                    )),
     dashboardSidebar(disable = TRUE),
     dashboardBody(
       useShinyalert(),
@@ -223,14 +232,12 @@ shinyApp(
           id = "tabset1",
           width = 12,
           tabPanel("Data Table", 
-                   fluidRow(DT::dataTableOutput("DataTableForm")),
-                   fluidRow( 
-                     actionButton(inputId = "save_edits",label = "Save"),
-                     tags$head(tags$style(".butt{background-color:#230682;} .butt{color: #e6ebef;}")),
-                     downloadButton("Download_csv", "Download in CSV", class="butt"),
-                     shinyjs::useShinyjs(),
-                     shinyjs::extendShinyjs(text = "shinyjs.refresh = function() { location.reload(); }")
-                   )
+                   DT::dataTableOutput("DataTableForm"),
+                   actionButton(inputId = "save_edits",label = "Save"),
+                   tags$head(tags$style(".butt{background-color:#230682;} .butt{color: #e6ebef;}")),
+                   downloadButton("Download_csv", "Download in CSV", class="butt"),
+                   shinyjs::useShinyjs(),
+                   shinyjs::extendShinyjs(text = "shinyjs.refresh = function() { location.reload(); }")
           ),
           tabPanel("ClusteR", DT::dataTableOutput("DataTableSummery"))
         )
@@ -239,11 +246,23 @@ shinyApp(
   ),
   server = function(input, output, session) {
     ### interactive dataset 
-    dataInstance<-reactiveValues()
-    dataInstance$Data<-readRDS("workingdata.rds")
-    
+    dataInstance <- reactiveValues()
+    dataInstance$Data <- readRDS("workingdata.rds")
+    map_reactive <- reactive({
+      leaflet() %>%
+        addProviderTiles(providers$Stamen.TonerLite, group = "TonerLite") %>%
+        addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
+        addProviderTiles(providers$OpenTopoMap, group = "OpenTopo") %>%
+        addLayersControl(
+          baseGroups = c("TonerLite", "Toner", "OpenTopo"),
+          options = layersControlOptions(collapsed = FALSE)
+        )
+    })
+    output$map <- renderLeaflet({
+      map_reactive()
+    })
     output$DataTableForm<-DT::renderDataTable({
-      datatable(as.data.frame(dataInstance$Data), editable = TRUE, selection = "none") 
+      datatable(as.data.frame(dataInstance$Data), editable = TRUE, class = 'compact hover stripe order-column row-border stripe', options = list(scrollX = TRUE), selection = "single") 
     })
     proxy = dataTableProxy('DataTableForm')
     observeEvent(input$DataTableForm_cell_edit, {
@@ -255,42 +274,41 @@ shinyApp(
       dataInstance$Data[i, j] <<- DT::coerceValue(v, dataInstance$Data[i, j]) 
       replaceData(proxy, dataInstance$Data, resetPaging = FALSE) # important
     })
-    observeEvent(input$save_edits,{
+    observeEvent(input$save_edits, {
       saveRDS(dataInstance$Data, "workingdata.rds")
       shinyalert(title = "Saved!", type = "success")
     })
-    output$Download_csv<- downloadHandler(
+    output$Download_csv <- downloadHandler(
       filename = function() {paste("clusteR_edits", Sys.Date(), ".csv", sep="")},
       content = function(file) {write.csv(data.frame(dataInstance$Data), file, row.names = F)}
     )
+    output$DataTableSummery <- DT::renderDataTable({
+      datatable(as.data.frame(table(subset(as.data.frame(dataInstance$Data),select=input$variabledisplay),dnn=input$variabledisplay)), class = 'compact hover stripe order-column row-border stripe') 
+    })
+    
     colorpal <- reactive({
       colorFactor(palette = distinctColorPalette(k = length(unique(dataInstance$Data[[input$variabledisplay]])), altCol = FALSE, runTsne = FALSE), 
                   levels = unique(dataInstance$Data[[input$variabledisplay]]))
     })
-    output$map <- renderLeaflet({
-      leaflet() %>%
-        addProviderTiles(providers$Stamen.TonerLite, group = "TonerLite") %>%
-        addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
-        addProviderTiles(providers$OpenTopoMap, group = "OpenTopo") %>%
-        addLayersControl(
-          baseGroups = c("TonerLite", "Toner", "OpenTopo"),
-          options = layersControlOptions(collapsed = FALSE)
-        )
-    })
     observe({
-      proxy <- leafletProxy("map", data = dataInstance$Data)
+      proxy <- leafletProxy("map")
       proxy %>% 
         clearGroup(group = "Points") %>% 
         clearControls()
       pal <- colorpal()
-      proxy %>% addLegend(title = "Legend", position = "bottomright", pal = pal, values = ~dataInstance$Data[[input$variabledisplay]])
+      proxy %>% 
+        addLegend(title = "Legend", 
+                  position = "bottomright", 
+                  pal = pal, 
+                  values = dataInstance$Data[[input$variabledisplay]]
+        )
     })    
     observe({
       pal <- colorpal()
-      leafletProxy("map", data = dataInstance$Data) %>%
-        addCircleMarkers(data=dataInstance$Data, 
-                         color = ~pal(dataInstance$Data[[input$variabledisplay]]), 
-                         label = ~dataInstance$Data[[input$variablelabel]],
+      leafletProxy("map") %>%
+        addCircleMarkers(data= dataInstance$Data, 
+                         color = pal(dataInstance$Data[[input$variabledisplay]]), 
+                         label = dataInstance$Data[[input$variablelabel]],
                          stroke = FALSE,
                          radius = 6,
                          fillOpacity = 0.9,
@@ -301,8 +319,98 @@ shinyApp(
           options = layersControlOptions(collapsed = FALSE)
         )
     })
-    output$DataTableSummery<-DT::renderDataTable({
-      datatable(as.data.frame(table(subset(as.data.frame(dataInstance$Data),select=input$variabledisplay),dnn=input$variabledisplay))) 
+    observe({
+      if (length(input$DataTableForm_rows_selected)) {
+        leafletProxy("map") %>%
+          flyTo(coordinates(dataInstance$Data[input$DataTableForm_rows_selected,])[1],coordinates(dataInstance$Data[input$DataTableForm_rows_selected,])[2],18)
+      }
+    })
+    user_created_map <- reactive({
+      pal <- colorpal()
+      m = map_reactive() %>%
+        addCircleMarkers(data= dataInstance$Data, 
+                         color = pal(dataInstance$Data[[input$variabledisplay]]), 
+                         label = dataInstance$Data[[input$variablelabel]],
+                         stroke = FALSE,
+                         radius = 6,
+                         fillOpacity = 0.9,
+                         group = "Points") %>%
+        addLayersControl(
+          baseGroups = c("TonerLite", "Toner", "OpenTopo"),
+          overlayGroups = c("Points"),
+          options = layersControlOptions(collapsed = FALSE)
+        ) %>%
+        setView(lng = input$map_center$lng, lat = input$map_center$lat, 
+                zoom = input$map_zoom)
+      m
+    })
+    
+    # Print the map to the working directory
+    observeEvent(input$print, {
+      # Take a screenshot of the map
+      mapshot(user_created_map(), file=paste0(getwd(), '/exported_map.png'))
+      
+      # Generate summery table images
+      ggsave(
+        "SummeryTable.png",
+        plot = ggplot() + 
+          annotation_custom(tableGrob(as.matrix(as.data.frame(table(subset(as.data.frame(dataInstance$Data),select=input$variabledisplay),dnn=input$variabledisplay))), vp = viewport(width=10))) + 
+          theme_void(),
+        width=10,
+        dpi = 300
+      )
+      
+      # Generate table images
+      maxrow = 30
+      npages = ceiling(nrow(dataInstance$Data)/maxrow)
+      for (i in 1:npages) {
+        idx = seq(1+((i-1)*maxrow), i*maxrow)
+        if(i*maxrow >= length(dataInstance$Data)){
+          idx = seq(1+((i-1)*maxrow), length(dataInstance$Data))
+        }
+        imageName = paste0("rawTable",i,".png")
+        ggsave(
+          imageName,
+          plot = ggplot() + 
+            annotation_custom(tableGrob(as.matrix(as.data.frame(dataInstance$Data[idx, ])), vp = viewport(width=10))) + 
+            theme_void(),
+          width=10,
+          dpi = 300
+        )
+      }
+      
+      # Modify FirstPage with dates
+      MapPage <- image_read(paste0(basedir,"/data/ClusteR_MapPageBase.png"))
+      MapPageChage <- image_annotate(MapPage, paste("Generated on:", Sys.Date(), " ",format(Sys.time(), "%H:%M:%S")), font = 'Helvetica', location = "+30+1100", size = 77)
+      
+      # and map image
+      mappaste <- image_read(paste0(getwd(),"/exported_map.png"))
+      FirstPage <- image_composite(MapPageChage, mappaste, offset = "+30+1200")
+      
+      # and summery table (probably do this on export...)
+      sumtablarge <- load.image(paste0(getwd(),"/SummeryTable.png"))
+      imager::save.image(autocrop(sumtablarge,"white"),paste0(getwd(),"/SummeryTableSamll.png"))
+      sumtabSmall <- image_read(paste0(getwd(),"/SummeryTableSamll.png"))
+      HeadPage <- image_composite(FirstPage, sumtabSmall, offset = "+1000+1200")
+      image_write(HeadPage, path = "HeadPage.png", format = "png")
+      
+      # remove extra images
+      file.remove('exported_map.png')
+      file.remove('SummeryTable.png')
+      file.remove('SummeryTableSamll.png')
+      file.remove('cropsum.png')
+      
+      # Flatten images into pdf
+      all_images = list.files(getwd(), full.names = TRUE, pattern = '.png')
+      all_images_1 <- purrr::reduce(
+        purrr::map(all_images,image_read),
+        c
+      )
+      image_write(all_images_1 , format = "pdf", "check.pdf")
+      file.remove(all_images)
+      
+      # Alert to finish :)
+      shinyalert(title = "Print complete, see /shiny!", type = "success")
     })
     
     session$onSessionEnded(stopApp)

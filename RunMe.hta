@@ -2,11 +2,11 @@
 <html lang="en">
 <meta charset="utf-8">
 <head>
-	<title>clusteR: Interactive point clustering built on R -- Version 0.8</title>
+	<title>clusteR: Interactive point clustering built on R -- Version 0.9</title>
 	<HTA:APPLICATION
-		APPLICATIONNAME="clusteR: Interactive point clustering built on R -- Version 0.8"
+		APPLICATIONNAME="clusteR: Interactive point clustering built on R -- Version 0.9"
 		id="clusteR"
-		version="0.8"
+		version="0.9"
 		scroll="yes"
 		singleinstance="yes"
 	/>
@@ -88,7 +88,7 @@ Sub ExecuteclusteR()
 	dim sCurPath
 	sCurPath = CreateObject("Scripting.FileSystemObject").GetAbsolutePathName(".")
 	dim basePathFilename
-	basePathFilename = sCurPath & "\global.txt"
+	basePathFilename = sCurPath & "\data\global.txt"
 	dim shinyPath
 	shinyPath = sCurPath & "\shiny\"
 	dim shinyPathFilename
@@ -150,11 +150,11 @@ End Sub
 <table>
 <tbody>
 <tr>
-	<td style="text-align: center;"> <img src="shiny/clusteR.png"> </td>
+	<td style="text-align: center;"> <img src="data/clusteR.png"> </td>
 </tr>
 <tr>
 	<td style="text-align: left;">
-	Welcome to clusteR -- V 0.8<br>
+	Welcome to clusteR -- V 0.9<br>
 	<br>
 	<fieldset>
 		<legend>User inputs</legend>
