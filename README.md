@@ -1,5 +1,5 @@
 # **clusteR**  
-![cluster view](https://github.com/JimColl/clusteR/blob/master/data/ClusteR.PNG)  
+![cluster view](https://github.com/JimColl/clusteR/blob/master/data/cluster.PNG)  
 See the github: https://github.com/JimColl/clusteR or it's companion on my website: https://jimcoll.github.io/courses/random/
 
 **About:**  
@@ -23,7 +23,7 @@ To start the process:
 2) Select a csv or a shapefile, enter the LAT LON and EPSG fields as necessary.  Replace spaces with .   
 3) and hit run!
 
-To "uninstall", just delete the folder.  Pandoc is also installed, and may be removed through the _add or remove programs_ system dialog via windows.
+To "uninstall", just delete the folder.  Pandoc and PhantomJS are also installed, and may be removed through the _add or remove programs_ system dialog and the user/AppData/Roaming folder respectively.
 
 **Known bugs:**  
 
@@ -31,6 +31,7 @@ To "uninstall", just delete the folder.  Pandoc is also installed, and may be re
 * Map and data don't wrap smoothly.  
   * Fly to (when you click on a row) will sometimes cause the server to lock up.  To fix, zoom in a bit before attempting to fly.  
 * Legends can be too large for the window.  
-* Editing the table is not fully tested  
-  * Shapefile editing broken  
+  * Map legends are also not printed.
+* Editing the table is not fully tested.  
+  * Shapefile editing broken.  
 * Print button works but output is gross  
