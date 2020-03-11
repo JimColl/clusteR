@@ -7,11 +7,11 @@ basedir <- getwd()
 #           |___/           
 # Here is where the HTA fired VBS replaces strings for user interactions.  At the moment if you want to run clusteR on another platform you can
 # Install R studio
-# Point the R installation to the FOSSFlood R-Portable executible
-# Rplace code below with desired inputs.
+# Point the R installation to the FOSSFlood R-Portable executable
+# Replace code below with desired inputs.
 
 # -- USER Inputs -------------------------------------------------------------------------
-userInputFile <- "C:/Users/Cornholio/Desktop/hold/sites_tristate-upstate_small.csv"
+userInputFile <- "C:/Users/Cornholio/Desktop/clusteR-master/data/TestDataset.csv"
 LATFieldName <- "Latitude.Decimal"
 LONFieldName <- "Longitude.Decimal"
 CRSFieldName <- "4326"
@@ -23,9 +23,7 @@ realProjection <- TRUE  # Unused
 useOldMethod <- FALSE  
 
 # -- Dev   Comment/uncomment with ctrl-shift-c
-#userInputFile <- "C:/Users/Cornholio/Desktop/hold/sites_tristate-upstate_small.csv"
-#userInputFile <- "C:/Users/Cornholio/Desktop/hold/sites_tristate-upstate_trimmed.csv"
-#userInputFile <- "C:/Users/Cornholio/Desktop/FOSSFlood-master/AOI/66044_66046_66047_66045_66049/geo/addresses/OSMaddresses.shp"
+#userInputFile <- paste0(basedir, "/data/TestDataset.csv")
 #LATFieldName <- "Latitude.Decimal"
 #LONFieldName <- "Longitude.Decimal"
 #CRSFieldName <- 4326
@@ -97,71 +95,77 @@ print("-- Welcome to clusteR - Pre-Preloading constants --")
 # install.packages("mapview")
 # install.packages("imager")
 
-suppressMessages(library(dismo))
-suppressMessages(library(ggplot2))
-suppressMessages(library(ncdf4))
-suppressMessages(library(ggmap))
-suppressMessages(library(curl))
-suppressMessages(library(RCurl))
-suppressMessages(library(stringr))
-suppressMessages(library(gtools))
-suppressMessages(library(rvest))
-suppressMessages(library(sp))
-suppressMessages(library(sf))
-suppressMessages(library(maptools))
-suppressMessages(library(rgdal))
-suppressMessages(library(raster))
-suppressMessages(library(dplyr))
-suppressMessages(library(leaflet))
-suppressMessages(library(shapefiles))
-suppressMessages(library(httr))
-suppressMessages(library(rgeos))
-suppressMessages(library(data.table))
-suppressMessages(library(DT))
-suppressMessages(library(RColorBrewer))
-suppressMessages(library(lattice))
-suppressMessages(library(scales))
-suppressMessages(library(rio))
-suppressMessages(library(cdlTools))
-suppressMessages(library(stargazer))
-suppressMessages(library(sjPlot))
-suppressMessages(library(MazamaSpatialUtils))
-suppressMessages(library(formattable))
-suppressMessages(library(mapview))
-suppressMessages(library(flexdashboard))
-suppressMessages(library(geosphere))
-suppressMessages(library(magrittr))
-suppressMessages(library(editData))
-suppressMessages(library(randomcoloR))
-suppressMessages(library(tidyverse))
-suppressMessages(library(sp))
-suppressMessages(library(htmlwidgets))
-suppressMessages(library(htmltools))
-suppressMessages(library(webshot))
-suppressMessages(library(plotly))
-suppressMessages(library(mapedit))
-suppressMessages(library(leafpop))
-suppressMessages(library(shiny))
-suppressMessages(library(shinydashboard))
-suppressMessages(library(shinyjs))
-suppressMessages(library(lubridate))
-suppressMessages(library(shinyalert))
-#suppressMessages(library(knitr))
-#suppressMessages(library(rmarkdown))
-suppressMessages(library(purrr))
-suppressMessages(library(gtable))
-suppressMessages(library(ggplot2))
-suppressMessages(library(gridExtra))
-suppressMessages(library(grid))
-suppressMessages(library(magick))
-suppressMessages(library(animation))
-suppressMessages(library(mapview))
-suppressMessages(library(imager))
+suppressWarnings(suppressMessages(library(dismo)))
+suppressWarnings(suppressMessages(library(ggplot2)))
+suppressWarnings(suppressMessages(library(ncdf4)))
+suppressWarnings(suppressMessages(library(ggmap)))
+suppressWarnings(suppressMessages(library(curl)))
+suppressWarnings(suppressMessages(library(RCurl)))
+suppressWarnings(suppressMessages(library(stringr)))
+suppressWarnings(suppressMessages(library(gtools)))
+suppressWarnings(suppressMessages(library(rvest)))
+suppressWarnings(suppressMessages(library(sp)))
+suppressWarnings(suppressMessages(library(sf)))
+suppressWarnings(suppressMessages(library(maptools)))
+suppressWarnings(suppressMessages(library(rgdal)))
+suppressWarnings(suppressMessages(library(raster)))
+suppressWarnings(suppressMessages(library(dplyr)))
+suppressWarnings(suppressMessages(library(leaflet)))
+suppressWarnings(suppressMessages(library(shapefiles)))
+suppressWarnings(suppressMessages(library(httr)))
+suppressWarnings(suppressMessages(library(rgeos)))
+suppressWarnings(suppressMessages(library(data.table)))
+suppressWarnings(suppressMessages(library(DT)))
+suppressWarnings(suppressMessages(library(RColorBrewer)))
+suppressWarnings(suppressMessages(library(lattice)))
+suppressWarnings(suppressMessages(library(scales)))
+suppressWarnings(suppressMessages(library(rio)))
+suppressWarnings(suppressMessages(library(cdlTools)))
+suppressWarnings(suppressMessages(library(stargazer)))
+suppressWarnings(suppressMessages(library(sjPlot)))
+suppressWarnings(suppressMessages(library(MazamaSpatialUtils)))
+suppressWarnings(suppressMessages(library(formattable)))
+suppressWarnings(suppressMessages(library(mapview)))
+suppressWarnings(suppressMessages(library(flexdashboard)))
+suppressWarnings(suppressMessages(library(geosphere)))
+suppressWarnings(suppressMessages(library(magrittr)))
+suppressWarnings(suppressMessages(library(editData)))
+suppressWarnings(suppressMessages(library(randomcoloR)))
+suppressWarnings(suppressMessages(library(tidyverse)))
+suppressWarnings(suppressMessages(library(sp)))
+suppressWarnings(suppressMessages(library(htmlwidgets)))
+suppressWarnings(suppressMessages(library(htmltools)))
+suppressWarnings(suppressMessages(library(webshot)))
+suppressWarnings(suppressMessages(library(plotly)))
+suppressWarnings(suppressMessages(library(mapedit)))
+suppressWarnings(suppressMessages(library(leafpop)))
+suppressWarnings(suppressMessages(library(shiny)))
+suppressWarnings(suppressMessages(library(shinydashboard)))
+suppressWarnings(suppressMessages(library(shinyjs)))
+suppressWarnings(suppressMessages(library(lubridate)))
+suppressWarnings(suppressMessages(library(shinyalert)))
+# suppressWarnings(suppressMessages(library(knitr)))
+suppressWarnings(suppressMessages(library(rmarkdown)))
+suppressWarnings(suppressMessages(library(purrr)))
+suppressWarnings(suppressMessages(library(gtable)))
+suppressWarnings(suppressMessages(library(ggplot2)))
+suppressWarnings(suppressMessages(library(gridExtra)))
+suppressWarnings(suppressMessages(library(grid)))
+suppressWarnings(suppressMessages(library(magick)))
+suppressWarnings(suppressMessages(library(animation)))
+suppressWarnings(suppressMessages(library(mapview)))
+suppressWarnings(suppressMessages(library(imager)))
+suppressWarnings(suppressMessages(library(installr)))
 
 useShinyalert()
-# if(webshot:::find_phantom()==NULL) {
-#   webshot::install_phantomjs()
-# }
+if(is.null(webshot:::find_phantom())) {
+  print("Installing phantomjs.")
+  webshot::install_phantomjs()
+}
+if(is.null(pandoc_version())) {
+  print("Pandoc is needed in order to print outputs, please follow the installation prompts when they appear.")
+  install.pandoc(use_regex = TRUE, to_restart = FALSE)
+}
 
 file_ext <- function(f_name) {
   f_name %>%
@@ -208,6 +212,7 @@ launch.browser = function(appUrl, browser.path=browser.chromeium) {
                  </body></html>" &', browser.path, appUrl), wait=FALSE)
 }
 
+print("Launching clusteR application.")
 shinyApp(
   ui = dashboardPage(
     dashboardHeader(title = "clusteR - V 0.82", 

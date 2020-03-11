@@ -1,5 +1,5 @@
 # **clusteR**  
-![cluster view](https://github.com/JimColl/clusteR/blob/master/data/cluster.png)  
+![cluster banner](https://github.com/JimColl/clusteR/blob/master/data/cluster.png)  
 See the github: https://github.com/JimColl/clusteR or it's companion on my website: https://jimcoll.github.io/courses/random/
 
 **About:**  
@@ -13,6 +13,7 @@ A tool to add points to a map from csv or shapefile, and interactively cluster t
 * Edit the table view of the database and optionally save the database back out.  
   * Click on a table entry to zoom to the location  
 * Fully reactive map and editing  
+![cluster view](https://github.com/JimColl/clusteR/blob/master/data/clusterView.png) 
 
 **How to run:**  
 
@@ -31,7 +32,8 @@ To "uninstall", just delete the folder.  Pandoc and PhantomJS are also installed
 * Map and data don't wrap smoothly.  
   * Fly to (when you click on a row) will sometimes cause the server to lock up.  To fix, zoom in a bit before attempting to fly.  
 * Legends can be too large for the window.  
+* Print button works but output is gross.
   * Map legends are also not printed.
+  * Pandoc needs to restart after being installed, so attempting to print after the installation will break the server.  To recover, close the window and re run the HTA.  
 * Editing the table is not fully tested.  
   * Shapefile editing broken.  
-* Print button works but output is gross  
