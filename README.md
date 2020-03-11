@@ -23,7 +23,7 @@ To start the process:
 2) Select a csv or a shapefile, enter the LAT LON and EPSG fields as necessary.  Replace spaces with .   
 3) and hit run!
 
-To "uninstall", just delete the folder
+To "uninstall", just delete the folder.  Pandoc is also installed, and may be removed through the _add or remove programs_ system dialog via windows.
 
 **Known bugs:**  
 

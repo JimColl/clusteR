@@ -159,9 +159,10 @@ suppressMessages(library(mapview))
 suppressMessages(library(imager))
 
 useShinyalert()
-# if(webshot:::find_phantom()==NULL) {
-#   webshot::install_phantomjs()
-# }
+if(webshot:::find_phantom()==NULL) {
+  webshot::install_phantomjs()
+  install.pandoc()
+}
 
 file_ext <- function(f_name) {
   f_name %>%
