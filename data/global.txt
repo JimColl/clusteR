@@ -215,7 +215,7 @@ launch.browser = function(appUrl, browser.path=browser.chromeium) {
 print("Launching clusteR application.")
 shinyApp(
   ui = dashboardPage(
-    dashboardHeader(title = "clusteR - V 0.82", 
+    dashboardHeader(title = "clusteR - V 0.9", 
                     tags$li(class = "dropdown",
                             actionButton("print", "Export analysis")
                     )),

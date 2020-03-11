@@ -24,7 +24,7 @@ To start the process:
 2) Select a csv or a shapefile, enter the LAT LON and EPSG fields as necessary.  Replace spaces with .   
 3) and hit run!
 
-To "uninstall", just delete the folder.  Pandoc and PhantomJS are also installed, and may be removed through the _add or remove programs_ system dialog and the user/AppData/Roaming folder respectively.
+A test dataset is included in the data folder.  To "uninstall", just delete the folder.  Pandoc and PhantomJS are also installed, and may be removed through the _add or remove programs_ system dialog and the user/AppData/Roaming folder respectively.
 
 **Known bugs:**  
 
