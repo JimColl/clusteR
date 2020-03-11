@@ -1,5 +1,5 @@
 # **clusteR**  
-![cluster view](https://github.com/JimColl/clusteR/blob/master/data/cluster.PNG)  
+![cluster view](https://github.com/JimColl/clusteR/blob/master/data/cluster.png)  
 See the github: https://github.com/JimColl/clusteR or it's companion on my website: https://jimcoll.github.io/courses/random/
 
 **About:**  
